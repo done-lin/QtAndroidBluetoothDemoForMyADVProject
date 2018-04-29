@@ -20,7 +20,7 @@
    <string>Widget</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_9">
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="font">
       <font>
@@ -837,6 +837,13 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QPushButton" name="pushButton_logo">
+     <property name="text">
+      <string/>
+     </property>
     </widget>
    </item>
   </layout>

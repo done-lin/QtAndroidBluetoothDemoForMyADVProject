@@ -17,6 +17,7 @@
 #include <QScreen>
 #include <QRect>
 #include <QDesktopWidget>
+#include <QTimer>
 
 
 #define MAX_LENGTH 256
@@ -46,7 +47,7 @@ public:
     QRect screenRect;
     bool bluetoothConnectedFlag;
     void set_ui_disable(bool trueOrFlase);
-
+    void send_fans_pwm_data(quint8 CMD, quint8 P1, quint8 P2, quint8 P3, quint8 P4);
 signals:
     void signal_connect_bluetooth_with_addr(QBluetoothAddress BtAddress);
 
@@ -74,6 +75,7 @@ public slots:
     void slot_send_light_blue_value_1(int val);
 
     void slot_stop_agent_discovering(void);
+    void slot_eliminate_dust_timeout(void);
 
 private slots:
 
@@ -93,6 +95,8 @@ private slots:
 
     void on_pushButton_dust_elimination_clicked();
 
+    void on_pushButton_logo_clicked();
+
 private:
 
     Ui::Widget *ui;
@@ -103,7 +107,8 @@ private:
     unsigned char comBuffer[15];
     unsigned int  comCount;
     QString comStr;
-
+    QTimer *eliminatTimer;
+    qint32 eliminateFansStatusFlag;
 };
 
 #endif // WIDGET_H

@@ -5,12 +5,13 @@
 #include <QApplication>
 #include <QThread>
 #include <QTimer>
-
+#include <QDesktopServices>
 
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Widget)
+    ui(new Ui::Widget),
+    eliminateFansStatusFlag(0)
 {
     ui->setupUi(this);
 
@@ -20,6 +21,7 @@ Widget::Widget(QWidget *parent) :
 
     comStr.clear();//情况通信用的数据数组
     mItems.clear();//清空用于搜索蓝牙设备的item（QListWidgetItem）
+    eliminatTimer = new QTimer();
     bluetoothConnectedFlag = false;
 
     if( localDevice->hostMode() == QBluetoothLocalDevice::HostDiscoverable ) {//如果可以被发现
@@ -322,6 +324,29 @@ void Widget::slot_stop_agent_discovering()
 
 }
 
+void Widget::slot_eliminate_dust_timeout()
+{
+    if(1 == eliminateFansStatusFlag || 3 == eliminateFansStatusFlag || 5 == eliminateFansStatusFlag){
+        eliminateFansStatusFlag++;
+        if(eliminateFansStatusFlag>5){
+            eliminateFansStatusFlag = 0;
+            eliminatTimer->stop();
+            QThread::msleep(1000);
+            on_pushButton_manual_speed_clicked();
+            return;
+        }
+        send_fans_pwm_data(0x03, 1, 1, 1, 1);
+    }else{
+        eliminateFansStatusFlag++;
+        if(eliminateFansStatusFlag>5){
+            eliminateFansStatusFlag = 0;
+            eliminatTimer->stop();
+            return;
+        }
+        send_fans_pwm_data(0x03, (unsigned char)254, (unsigned char)254,(unsigned char)254, (unsigned char)254);
+    }
+}
+
 void Widget::init_all_signals_and_slots()
 {
     connect(discoveryAgent, SIGNAL(deviceDiscovered(QBluetoothDeviceInfo)),//每次发现就会调用添加槽函数
@@ -349,7 +374,7 @@ void Widget::init_all_signals_and_slots()
     connect(ui->horizontalSlider_red, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_red_value_1(int)));
     connect(ui->horizontalSlider_green, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_green_value_1(int)));
     connect(ui->horizontalSlider_blue, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_blue_value_1(int)));
-
+    connect(eliminatTimer, SIGNAL(timeout()), SLOT(slot_eliminate_dust_timeout()));
 }
 
 void Widget::init_all_sliders()//初始化各个slider，初始化步进和范围
@@ -399,7 +424,7 @@ QString Widget::loadStyleSheetQString(const QString &sheetName)//载入qss风格
 
 void Widget::set_ui_disable(bool trueOrFlase)
 {
-    ui->pushButton_auto_speed->setDisabled(trueOrFlase);
+    ui->pushButton_auto_speed->setDisabled(true);
     ui->pushButton_manual_speed->setDisabled(trueOrFlase);
     ui->pushButton_dust_elimination->setDisabled(trueOrFlase);
     ui->pushButton_save_setting->setDisabled(trueOrFlase);
@@ -412,6 +437,28 @@ void Widget::set_ui_disable(bool trueOrFlase)
     ui->horizontalSlider_red->setDisabled(trueOrFlase);
     ui->horizontalSlider_green->setDisabled(trueOrFlase);
     ui->horizontalSlider_blue->setDisabled(trueOrFlase);
+}
+
+void Widget::send_fans_pwm_data(quint8 CMD, quint8 P1, quint8 P2, quint8 P3, quint8 P4)
+{
+
+    QByteArray data;
+    data.clear();
+
+    char urData[]={static_cast<int8_t>(0xff), 0xaa, 0x04, 0x00, 0x01, 0x02, 0x03, 0x00};
+    urData[1] = CMD;
+    urData[3] = P1;
+    urData[4] = P2;
+    urData[5] = P3;
+    urData[6] = P4;
+    urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
+
+    data.append(urData);
+    if(socket->isOpen() && socket->isWritable()){
+        socket->write(data);
+    }else{
+        QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
+    }
 }
 
 void Widget::on_pushButton_lights_off_clicked()//按下关灯按钮
@@ -499,45 +546,38 @@ void Widget::on_pushButton_send_data_clicked()//数据发送键按下，获取te
 
 void Widget::on_pushButton_auto_speed_clicked()
 {
-    ;
+    ui->pushButton_manual_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    ui->pushButton_auto_speed->setStyleSheet(loadStyleSheetQString(":/button_selected.qss"));
+    ui->pushButton_manual_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    ui->pushButton_save_setting->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
 }
 
 void Widget::on_pushButton_manual_speed_clicked()
 {
-    QByteArray data;
-    data.clear();
-
-    char urData[]={static_cast<int8_t>(0xff), 2, 0x04, 0x00, 0x01, 0x02, 0x03, 0x00};
-    urData[3]=(unsigned char)ui->horizontalSlider_p1->value();
-    urData[4]=(unsigned char)ui->horizontalSlider_p2->value();
-    urData[5]=(unsigned char)ui->horizontalSlider_p3->value();
-    urData[6]=(unsigned char)ui->horizontalSlider_p4->value();
-    urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
-
-    data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
-        socket->write(data);
-    }else{
-        QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
-    }
+    ui->pushButton_manual_speed->setStyleSheet(loadStyleSheetQString(":/button_selected.qss"));
+    ui->pushButton_auto_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    ui->pushButton_dust_elimination->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    ui->pushButton_save_setting->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    eliminatTimer->stop();
+   send_fans_pwm_data(0x02, (unsigned char)ui->horizontalSlider_p1->value(), (unsigned char)ui->horizontalSlider_p2->value(),
+                      (unsigned char)ui->horizontalSlider_p3->value(), (unsigned char)ui->horizontalSlider_p4->value());
 }
 
 void Widget::on_pushButton_dust_elimination_clicked()
 {
-    QByteArray data;
-    data.clear();
+    ui->pushButton_dust_elimination->setStyleSheet(loadStyleSheetQString(":/button_selected.qss"));
+    ui->pushButton_auto_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    ui->pushButton_manual_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    ui->pushButton_save_setting->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
 
-    char urData[]={static_cast<int8_t>(0xff), 3, 0x04, 0x00, 0x01, 0x02, 0x03, 0x00};
-    urData[3]=(unsigned char)ui->horizontalSlider_p1->value();
-    urData[4]=(unsigned char)ui->horizontalSlider_p2->value();
-    urData[5]=(unsigned char)ui->horizontalSlider_p3->value();
-    urData[6]=(unsigned char)ui->horizontalSlider_p4->value();
-    urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
+    send_fans_pwm_data(0x03, (unsigned char)254, (unsigned char)254,(unsigned char)254, (unsigned char)254);
+    eliminateFansStatusFlag = 1;
+    if(eliminatTimer->isActive())
+        eliminatTimer->stop();
+    eliminatTimer->start(2500);
+}
 
-    data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
-        socket->write(data);
-    }else{
-        QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
-    }
+void Widget::on_pushButton_logo_clicked()
+{
+    QDesktopServices::openUrl(QUrl::fromLocalFile("http://www.advgene.com/"));//qt打开超链接，qt打开网页
 }

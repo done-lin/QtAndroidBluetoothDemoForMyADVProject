@@ -98,6 +98,7 @@ public:
     QPushButton *pushButton_clear;
     QPushButton *pushButton_scan;
     QCheckBox *checkBox_discoverable;
+    QPushButton *pushButton_logo;
 
     void setupUi(QWidget *Widget)
     {
@@ -584,7 +585,12 @@ public:
 
         tabWidget->addTab(tab_3, QString());
 
-        gridLayout_9->addWidget(tabWidget, 0, 0, 1, 1);
+        gridLayout_9->addWidget(tabWidget, 1, 0, 1, 1);
+
+        pushButton_logo = new QPushButton(Widget);
+        pushButton_logo->setObjectName(QStringLiteral("pushButton_logo"));
+
+        gridLayout_9->addWidget(pushButton_logo, 0, 0, 1, 1);
 
 
         retranslateUi(Widget);
@@ -629,6 +635,7 @@ public:
         pushButton_scan->setText(QApplication::translate("Widget", "Scan Device", Q_NULLPTR));
         checkBox_discoverable->setText(QApplication::translate("Widget", "Discoverable", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("Widget", "BlueTooth Info", Q_NULLPTR));
+        pushButton_logo->setText(QString());
     } // retranslateUi
 
 };

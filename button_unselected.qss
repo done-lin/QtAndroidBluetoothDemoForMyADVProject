@@ -1,0 +1,8 @@
+QPushButton {
+    background-color: #332C2B;
+    border-width: 2px;
+    border-color: #5F5D5D;
+    border-style: solid;
+    border-radius: 10;
+    color: #5F5D5D;
+}

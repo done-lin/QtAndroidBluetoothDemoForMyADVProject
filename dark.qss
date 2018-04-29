@@ -11,17 +11,13 @@ QPushButton {
     border-width: 2px;
     border-color: #5F5D5D;
     border-style: solid;
-    border-radius: 6;
+    border-radius: 10;
     color: #5F5D5D;
 }
 
-QPushButton#Btn_Logo {
-    min-width:1042px;
-    max-width:1042px;
-    min-height:28px;
-    max-height:28px;
+QPushButton#pushButton_logo {
     color: #00A2E9;
-    border-radius: 0;
+    border-radius: 10;
     background-color: #332C2B;
     border: 1px solid #474443;
     border-bottom: 0px;
@@ -29,9 +25,10 @@ QPushButton#Btn_Logo {
     margin-right: 2px;
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #222222, stop:1 #474443);
     background-image: url(:/logo.png);
-    background-position: 50% 50%;
+    background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    background-size:100% 65%;
 }
 
 QPushButton:hover {
@@ -40,46 +37,39 @@ QPushButton:hover {
    border-color: #00A2E9;
 }
 
-QPushButton#Btn_SpeedMode1 {
-    border-top-left-radius: 6;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: 6;
-    border-bottom-right-radius: 0;
+QPushButton#pushButton_auto_speed {
+    border-top-left-radius: 16;
 }
 
-QPushButton#Btn_SpeedMode2 {
-    border-top-left-radius: 0;
-    border-top-right-radius: 6;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 6;
+QPushButton#pushButton_manual_speed {
+    border-top-right-radius: 16;
+}
+QPushButton#pushButton_dust_elimination {
+    border-buttom-left-radius: 16;
 }
 
-QPushButton#Btn_LightUp {
-    border-top-left-radius: 6;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: 6;
-    border-bottom-right-radius: 0;
+QPushButton#pushButton_pushButton_save_setting {
+    border-buttom-right-radius: 16;
 }
 
-QPushButton#Btn_LightOff {
-    border-top-left-radius: 0;
-    border-top-right-radius: 6;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 6;
+QPushButton#pushButton_lights_up {
+    border-top-left-radius: 16;
+    border-bottom-left-radius: 16;
 }
 
-QPushButton#Btn_LightConst {
-    border-top-left-radius: 6;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: 6;
-    border-bottom-right-radius: 0;
+QPushButton#pushButton_lights_off {
+    border-top-right-radius: 16;
+    border-bottom-right-radius: 16;
 }
 
-QPushButton#Btn_LightBreath {
-    border-top-left-radius: 0;
-    border-top-right-radius: 6;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 6;
+QPushButton#pushButton_static_light {
+    border-top-left-radius: 16;
+    border-bottom-left-radius: 16;
+}
+
+QPushButton#pushButton_dynamic_light {
+    border-top-right-radius: 16;
+    border-bottom-right-radius: 16;
 }
 
 QPushButton#Btn_ManualStartup {
@@ -127,10 +117,8 @@ QTextBrowser#graphicsView  {
 
 
 #tabWidget QTabBar::tab{
-        min-width:156px;
-        max-width:156px;
-        min-height:28px;
-        max-height:28px;
+        min-width:200px;
+        max-width:200px;
         color: #00A2E9;
         background-color: #332C2B;
         border: 1px solid #474443;
