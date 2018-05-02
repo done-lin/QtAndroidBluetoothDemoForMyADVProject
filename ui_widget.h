@@ -34,6 +34,8 @@ class Ui_Widget
 {
 public:
     QGridLayout *gridLayout_9;
+    QVBoxLayout *verticalLayout_4;
+    QPushButton *pushButton_logo;
     QTabWidget *tabWidget;
     QWidget *tab;
     QGridLayout *gridLayout_5;
@@ -73,6 +75,22 @@ public:
     QLabel *label_p3_2;
     QSlider *horizontalSlider_blue;
     QSpacerItem *verticalSpacer_2;
+    QGridLayout *gridLayout_10;
+    QPushButton *pushButton_color_2;
+    QPushButton *pushButton_color_4;
+    QPushButton *pushButton_color_1;
+    QPushButton *pushButton_color_6;
+    QPushButton *pushButton_color_3;
+    QPushButton *pushButton_color_7;
+    QPushButton *pushButton_color_5;
+    QPushButton *pushButton_color_8;
+    QPushButton *pushButton_color_9;
+    QPushButton *pushButton_color_10;
+    QPushButton *pushButton_color_11;
+    QPushButton *pushButton_color_12;
+    QPushButton *pushButton_color_13;
+    QPushButton *pushButton_color_14;
+    QSpacerItem *verticalSpacer_8;
     QGridLayout *gridLayout;
     QPushButton *pushButton_lights_off;
     QPushButton *pushButton_lights_up;
@@ -98,13 +116,12 @@ public:
     QPushButton *pushButton_clear;
     QPushButton *pushButton_scan;
     QCheckBox *checkBox_discoverable;
-    QPushButton *pushButton_logo;
 
     void setupUi(QWidget *Widget)
     {
         if (Widget->objectName().isEmpty())
             Widget->setObjectName(QStringLiteral("Widget"));
-        Widget->resize(592, 679);
+        Widget->resize(458, 619);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -114,6 +131,15 @@ public:
         gridLayout_9->setSpacing(6);
         gridLayout_9->setContentsMargins(11, 11, 11, 11);
         gridLayout_9->setObjectName(QStringLiteral("gridLayout_9"));
+        verticalLayout_4 = new QVBoxLayout();
+        verticalLayout_4->setSpacing(8);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        verticalLayout_4->setSizeConstraint(QLayout::SetDefaultConstraint);
+        pushButton_logo = new QPushButton(Widget);
+        pushButton_logo->setObjectName(QStringLiteral("pushButton_logo"));
+
+        verticalLayout_4->addWidget(pushButton_logo);
+
         tabWidget = new QTabWidget(Widget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
         QFont font;
@@ -385,9 +411,131 @@ public:
 
         verticalLayout->addLayout(gridLayout_4);
 
-        verticalSpacer_2 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer_2 = new QSpacerItem(20, 30, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout->addItem(verticalSpacer_2);
+
+        gridLayout_10 = new QGridLayout();
+        gridLayout_10->setSpacing(6);
+        gridLayout_10->setObjectName(QStringLiteral("gridLayout_10"));
+        pushButton_color_2 = new QPushButton(tab_2);
+        pushButton_color_2->setObjectName(QStringLiteral("pushButton_color_2"));
+        sizePolicy.setHeightForWidth(pushButton_color_2->sizePolicy().hasHeightForWidth());
+        pushButton_color_2->setSizePolicy(sizePolicy);
+        pushButton_color_2->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_2, 0, 1, 1, 1);
+
+        pushButton_color_4 = new QPushButton(tab_2);
+        pushButton_color_4->setObjectName(QStringLiteral("pushButton_color_4"));
+        sizePolicy.setHeightForWidth(pushButton_color_4->sizePolicy().hasHeightForWidth());
+        pushButton_color_4->setSizePolicy(sizePolicy);
+        pushButton_color_4->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_4, 0, 3, 1, 1);
+
+        pushButton_color_1 = new QPushButton(tab_2);
+        pushButton_color_1->setObjectName(QStringLiteral("pushButton_color_1"));
+        sizePolicy.setHeightForWidth(pushButton_color_1->sizePolicy().hasHeightForWidth());
+        pushButton_color_1->setSizePolicy(sizePolicy);
+        pushButton_color_1->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_1, 0, 0, 1, 1);
+
+        pushButton_color_6 = new QPushButton(tab_2);
+        pushButton_color_6->setObjectName(QStringLiteral("pushButton_color_6"));
+        sizePolicy.setHeightForWidth(pushButton_color_6->sizePolicy().hasHeightForWidth());
+        pushButton_color_6->setSizePolicy(sizePolicy);
+        pushButton_color_6->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_6, 0, 5, 1, 1);
+
+        pushButton_color_3 = new QPushButton(tab_2);
+        pushButton_color_3->setObjectName(QStringLiteral("pushButton_color_3"));
+        sizePolicy.setHeightForWidth(pushButton_color_3->sizePolicy().hasHeightForWidth());
+        pushButton_color_3->setSizePolicy(sizePolicy);
+        pushButton_color_3->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_3, 0, 2, 1, 1);
+
+        pushButton_color_7 = new QPushButton(tab_2);
+        pushButton_color_7->setObjectName(QStringLiteral("pushButton_color_7"));
+        sizePolicy.setHeightForWidth(pushButton_color_7->sizePolicy().hasHeightForWidth());
+        pushButton_color_7->setSizePolicy(sizePolicy);
+        pushButton_color_7->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_7, 0, 6, 1, 1);
+
+        pushButton_color_5 = new QPushButton(tab_2);
+        pushButton_color_5->setObjectName(QStringLiteral("pushButton_color_5"));
+        sizePolicy.setHeightForWidth(pushButton_color_5->sizePolicy().hasHeightForWidth());
+        pushButton_color_5->setSizePolicy(sizePolicy);
+        pushButton_color_5->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_5, 0, 4, 1, 1);
+
+        pushButton_color_8 = new QPushButton(tab_2);
+        pushButton_color_8->setObjectName(QStringLiteral("pushButton_color_8"));
+        sizePolicy.setHeightForWidth(pushButton_color_8->sizePolicy().hasHeightForWidth());
+        pushButton_color_8->setSizePolicy(sizePolicy);
+        pushButton_color_8->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_8, 1, 0, 1, 1);
+
+        pushButton_color_9 = new QPushButton(tab_2);
+        pushButton_color_9->setObjectName(QStringLiteral("pushButton_color_9"));
+        sizePolicy.setHeightForWidth(pushButton_color_9->sizePolicy().hasHeightForWidth());
+        pushButton_color_9->setSizePolicy(sizePolicy);
+        pushButton_color_9->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_9, 1, 1, 1, 1);
+
+        pushButton_color_10 = new QPushButton(tab_2);
+        pushButton_color_10->setObjectName(QStringLiteral("pushButton_color_10"));
+        sizePolicy.setHeightForWidth(pushButton_color_10->sizePolicy().hasHeightForWidth());
+        pushButton_color_10->setSizePolicy(sizePolicy);
+        pushButton_color_10->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_10, 1, 2, 1, 1);
+
+        pushButton_color_11 = new QPushButton(tab_2);
+        pushButton_color_11->setObjectName(QStringLiteral("pushButton_color_11"));
+        sizePolicy.setHeightForWidth(pushButton_color_11->sizePolicy().hasHeightForWidth());
+        pushButton_color_11->setSizePolicy(sizePolicy);
+        pushButton_color_11->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_11, 1, 3, 1, 1);
+
+        pushButton_color_12 = new QPushButton(tab_2);
+        pushButton_color_12->setObjectName(QStringLiteral("pushButton_color_12"));
+        sizePolicy.setHeightForWidth(pushButton_color_12->sizePolicy().hasHeightForWidth());
+        pushButton_color_12->setSizePolicy(sizePolicy);
+        pushButton_color_12->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_12, 1, 4, 1, 1);
+
+        pushButton_color_13 = new QPushButton(tab_2);
+        pushButton_color_13->setObjectName(QStringLiteral("pushButton_color_13"));
+        sizePolicy.setHeightForWidth(pushButton_color_13->sizePolicy().hasHeightForWidth());
+        pushButton_color_13->setSizePolicy(sizePolicy);
+        pushButton_color_13->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_13, 1, 5, 1, 1);
+
+        pushButton_color_14 = new QPushButton(tab_2);
+        pushButton_color_14->setObjectName(QStringLiteral("pushButton_color_14"));
+        sizePolicy.setHeightForWidth(pushButton_color_14->sizePolicy().hasHeightForWidth());
+        pushButton_color_14->setSizePolicy(sizePolicy);
+        pushButton_color_14->setMinimumSize(QSize(0, 80));
+
+        gridLayout_10->addWidget(pushButton_color_14, 1, 6, 1, 1);
+
+
+        verticalLayout->addLayout(gridLayout_10);
+
+        verticalSpacer_8 = new QSpacerItem(20, 30, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout->addItem(verticalSpacer_8);
 
         gridLayout = new QGridLayout();
         gridLayout->setSpacing(6);
@@ -427,7 +575,7 @@ public:
 
         verticalLayout->addLayout(gridLayout);
 
-        verticalSpacer = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalSpacer = new QSpacerItem(20, 30, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout->addItem(verticalSpacer);
 
@@ -455,7 +603,9 @@ public:
         verticalLayout->setStretch(1, 1);
         verticalLayout->setStretch(2, 3);
         verticalLayout->setStretch(3, 1);
-        verticalLayout->setStretch(4, 1);
+        verticalLayout->setStretch(4, 3);
+        verticalLayout->setStretch(5, 1);
+        verticalLayout->setStretch(6, 1);
 
         gridLayout_6->addLayout(verticalLayout, 0, 0, 1, 1);
 
@@ -585,17 +735,17 @@ public:
 
         tabWidget->addTab(tab_3, QString());
 
-        gridLayout_9->addWidget(tabWidget, 1, 0, 1, 1);
+        verticalLayout_4->addWidget(tabWidget);
 
-        pushButton_logo = new QPushButton(Widget);
-        pushButton_logo->setObjectName(QStringLiteral("pushButton_logo"));
+        verticalLayout_4->setStretch(0, 1);
+        verticalLayout_4->setStretch(1, 7);
 
-        gridLayout_9->addWidget(pushButton_logo, 0, 0, 1, 1);
+        gridLayout_9->addLayout(verticalLayout_4, 1, 1, 1, 2);
 
 
         retranslateUi(Widget);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(Widget);
@@ -604,6 +754,7 @@ public:
     void retranslateUi(QWidget *Widget)
     {
         Widget->setWindowTitle(QApplication::translate("Widget", "Widget", Q_NULLPTR));
+        pushButton_logo->setText(QString());
         pushButton_manual_speed->setText(QApplication::translate("Widget", "Manual speed", Q_NULLPTR));
         pushButton_auto_speed->setText(QApplication::translate("Widget", "Auto speed", Q_NULLPTR));
         pushButton_dust_elimination->setText(QApplication::translate("Widget", "Dust elimination", Q_NULLPTR));
@@ -621,6 +772,20 @@ public:
         label_p2_2->setText(QApplication::translate("Widget", "GREEN", Q_NULLPTR));
         label_p1_2->setText(QApplication::translate("Widget", "RED", Q_NULLPTR));
         label_p3_2->setText(QApplication::translate("Widget", "BLUE", Q_NULLPTR));
+        pushButton_color_2->setText(QString());
+        pushButton_color_4->setText(QString());
+        pushButton_color_1->setText(QString());
+        pushButton_color_6->setText(QString());
+        pushButton_color_3->setText(QString());
+        pushButton_color_7->setText(QString());
+        pushButton_color_5->setText(QString());
+        pushButton_color_8->setText(QString());
+        pushButton_color_9->setText(QString());
+        pushButton_color_10->setText(QString());
+        pushButton_color_11->setText(QString());
+        pushButton_color_12->setText(QString());
+        pushButton_color_13->setText(QString());
+        pushButton_color_14->setText(QString());
         pushButton_lights_off->setText(QApplication::translate("Widget", "Lights off", Q_NULLPTR));
         pushButton_lights_up->setText(QApplication::translate("Widget", "Lights up", Q_NULLPTR));
         pushButton_static_light->setText(QApplication::translate("Widget", "Static light", Q_NULLPTR));
@@ -635,7 +800,6 @@ public:
         pushButton_scan->setText(QApplication::translate("Widget", "Scan Device", Q_NULLPTR));
         checkBox_discoverable->setText(QApplication::translate("Widget", "Discoverable", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("Widget", "BlueTooth Info", Q_NULLPTR));
-        pushButton_logo->setText(QString());
     } // retranslateUi
 
 };

@@ -91,6 +91,90 @@ QPushButton:pressed {
     background-color: #807876;
 }
 
+QPushButton#pushButton_color_1 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #009b4c;
+    height: 25;
+}
+QPushButton#pushButton_color_2 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #acce22;
+    height: 25;
+}
+QPushButton#pushButton_color_3 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #fff000;
+    height: 25;
+}
+QPushButton#pushButton_color_4 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #f08519;
+    height: 25;
+}
+QPushButton#pushButton_color_5 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #e62129;
+    height: 25;
+}
+QPushButton#pushButton_color_6 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #a72185;
+    height: 25;
+}
+QPushButton#pushButton_color_7 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #e40082;
+    height: 25;
+}
+QPushButton#pushButton_color_8 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #f4b5d0;
+    height: 25;
+}
+QPushButton#pushButton_color_9 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #fefefe;
+    height: 25;
+}
+QPushButton#pushButton_color_10 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #a0d9f6;
+    height: 25;
+}
+QPushButton#pushButton_color_11 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #62c3d0;
+    height: 25;
+}
+QPushButton#pushButton_color_12 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #00a2e9;
+    height: 25;
+}
+QPushButton#pushButton_color_13 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #006db8;
+    height: 25;
+}
+QPushButton#pushButton_color_14 {
+    border: 0px;
+    border-radius: 0;
+    background-color: #2f318b;
+    height: 25;
+}
 
 
 QLabel {
@@ -119,6 +203,7 @@ QTextBrowser#graphicsView  {
 #tabWidget QTabBar::tab{
         min-width:200px;
         max-width:200px;
+        min-height:100px;
         color: #00A2E9;
         background-color: #332C2B;
         border: 1px solid #474443;
@@ -141,7 +226,7 @@ QTabWidget::pane {
 QSlider::groove::horizontal{
     border: 1px solid #5F5D5D;
     background: #332C2B;
-    height: 9px;
+    height: 12px;
     border-top-left-radius: 4;
     border-top-right-radius: 4;
     border-bottom-left-radius: 4;
@@ -151,11 +236,11 @@ QSlider::groove::horizontal{
 
 QSlider::handle:horizontal {
     border: 1px solid #5F5D5D;
-    width: 18px;
-    height: 20px;
+    width: 26px;
+    height: 26px;
     background-color: #fcfcfc;
     margin: -8px -8px -8px -8px;
-    border-radius: 9;
+    border-radius: 12;
 }
 
 
