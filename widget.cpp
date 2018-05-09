@@ -19,6 +19,10 @@ Widget::Widget(QWidget *parent) :
     localDevice = new QBluetoothLocalDevice();
     socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);//创建一个socket，用于蓝牙通信
 
+    g_DontSendLightFlag[0] = 0;
+    g_DontSendLightFlag[1] = 0;
+    g_DontSendLightFlag[2] = 0;
+
     comStr.clear();//情况通信用的数据数组
     mItems.clear();//清空用于搜索蓝牙设备的item（QListWidgetItem）
     eliminatTimer = new QTimer();
@@ -255,6 +259,10 @@ void Widget::slot_send_slider_value_4(int val)//发送风扇4的转速数据
 
 void Widget::slot_send_light_red_value_1(int val)
 {
+    if(g_DontSendLightFlag[0] == 1){
+        g_DontSendLightFlag[0] = 0;
+        return;
+    }
     QByteArray data;
     data.clear();
 
@@ -274,6 +282,10 @@ void Widget::slot_send_light_red_value_1(int val)
 
 void Widget::slot_send_light_green_value_1(int val)
 {
+    if(g_DontSendLightFlag[1] == 1){
+        g_DontSendLightFlag[1] = 0;
+        return;
+    }
     QByteArray data;
     data.clear();
 
@@ -293,6 +305,10 @@ void Widget::slot_send_light_green_value_1(int val)
 
 void Widget::slot_send_light_blue_value_1(int val)
 {
+    if(g_DontSendLightFlag[2] == 1){
+        g_DontSendLightFlag[2] = 0;
+        return;
+    }
     QByteArray data;
     data.clear();
 
@@ -366,23 +382,19 @@ void Widget::init_all_signals_and_slots()
 
     connect(this, SIGNAL(signal_connect_bluetooth_with_addr(QBluetoothAddress)), this, SLOT(slot_connect_bluteooth(QBluetoothAddress)));
 
-    connect(ui->horizontalSlider_p1, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_1(int)));
-    connect(ui->horizontalSlider_p2, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_2(int)));
-    connect(ui->horizontalSlider_p3, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_3(int)));
-    connect(ui->horizontalSlider_p4, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_4(int)));
 
-    connect(ui->horizontalSlider_red, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_red_value_1(int)));
-    connect(ui->horizontalSlider_green, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_green_value_1(int)));
-    connect(ui->horizontalSlider_blue, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_blue_value_1(int)));
+    connect_all_fans_slider_signals();
+    connect_all_lights_signals();
+
     connect(eliminatTimer, SIGNAL(timeout()), SLOT(slot_eliminate_dust_timeout()));
 }
 
 void Widget::init_all_sliders()//初始化各个slider，初始化步进和范围
 {
-    ui->horizontalSlider_p1->setRange(2, 255);
-    ui->horizontalSlider_p2->setRange(2, 255);
-    ui->horizontalSlider_p3->setRange(2, 255);
-    ui->horizontalSlider_p4->setRange(2, 255);
+    ui->horizontalSlider_p1->setRange(1, 255);
+    ui->horizontalSlider_p2->setRange(1, 255);
+    ui->horizontalSlider_p3->setRange(1, 255);
+    ui->horizontalSlider_p4->setRange(1, 255);
 
     ui->horizontalSlider_p1->setSingleStep(255/15);
     ui->horizontalSlider_p2->setSingleStep(255/15);
@@ -392,13 +404,13 @@ void Widget::init_all_sliders()//初始化各个slider，初始化步进和范�
 
 void Widget::init_all_light_sliders()
 {
-    ui->horizontalSlider_red->setRange(2, 255);
-    ui->horizontalSlider_red->setRange(2, 255);
-    ui->horizontalSlider_red->setRange(2, 255);
+    ui->horizontalSlider_red->setRange(1, 255);
+    ui->horizontalSlider_green->setRange(1, 255);
+    ui->horizontalSlider_blue->setRange(1, 255);
 
     ui->horizontalSlider_red->setSingleStep(255/15);
-    ui->horizontalSlider_red->setSingleStep(255/15);
-    ui->horizontalSlider_red->setSingleStep(255/15);
+    ui->horizontalSlider_green->setSingleStep(255/15);
+    ui->horizontalSlider_blue->setSingleStep(255/15);
 }
 
 
@@ -457,8 +469,58 @@ void Widget::send_fans_pwm_data(quint8 CMD, quint8 P1, quint8 P2, quint8 P3, qui
     if(socket->isOpen() && socket->isWritable()){
         socket->write(data);
     }else{
-        QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
+        QMessageBox::critical(this, tr("Error"), tr("[send_fans_pwm_data]:Can't write dev, Error!"));
     }
+}
+
+void Widget::send_lights_rgb_data(quint8 CMD, quint8 R, quint8 G, quint8 B)
+{
+    QByteArray data;
+    data.clear();
+
+    char urData[]={static_cast<int8_t>(0xff), 0xaa, 0x03, 0x00, 0x01, 0x02, 0x03};
+    urData[1] = CMD;
+    urData[3] = R;
+    urData[4] = G;
+    urData[5] = B;
+    urData[6] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5];
+
+    data.append(urData);
+    if(socket->isOpen() && socket->isWritable()){
+        socket->write(data);
+    }else{
+        QMessageBox::critical(this, tr("Error"), tr("[send_lights_rgb_data]:Can't write dev, Error!"));
+    }
+}
+
+void Widget::disconnect_all_lights_signals()
+{
+    disconnect(ui->horizontalSlider_red, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_red_value_1(int)));
+    disconnect(ui->horizontalSlider_green, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_green_value_1(int)));
+    disconnect(ui->horizontalSlider_blue, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_blue_value_1(int)));
+}
+
+void Widget::connect_all_lights_signals()
+{
+    connect(ui->horizontalSlider_red, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_red_value_1(int)));
+    connect(ui->horizontalSlider_green, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_green_value_1(int)));
+    connect(ui->horizontalSlider_blue, SIGNAL(valueChanged(int)), this, SLOT(slot_send_light_blue_value_1(int)));
+}
+
+void Widget::connect_all_fans_slider_signals()
+{
+    connect(ui->horizontalSlider_p1, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_1(int)));
+    connect(ui->horizontalSlider_p2, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_2(int)));
+    connect(ui->horizontalSlider_p3, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_3(int)));
+    connect(ui->horizontalSlider_p4, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_4(int)));
+}
+
+void Widget::disconnect_all_fans_slider_signals()
+{
+    disconnect(ui->horizontalSlider_p1, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_1(int)));
+    disconnect(ui->horizontalSlider_p2, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_2(int)));
+    disconnect(ui->horizontalSlider_p3, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_3(int)));
+    disconnect(ui->horizontalSlider_p4, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_4(int)));
 }
 
 void Widget::on_pushButton_lights_off_clicked()//按下关灯按钮
@@ -479,21 +541,22 @@ void Widget::on_pushButton_lights_off_clicked()//按下关灯按钮
 
 void Widget::on_pushButton_lights_up_clicked()//按下开灯按钮
 {
-    QByteArray data;
-    data.clear();
+//    QByteArray data;
+//    data.clear();
 
-    char urData[]={static_cast<int8_t>(0xff), 19, 0x04, 0x00, 0x01, 0x02, 0x03, 0x00};
-    urData[4] =(unsigned char)ui->horizontalSlider_red->value();
-    urData[5] =(unsigned char)ui->horizontalSlider_green->value();
-    urData[6] =(unsigned char)ui->horizontalSlider_blue->value();
-    urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
+//    char urData[]={static_cast<int8_t>(0xff), 19, 0x04, 0x00, 0x01, 0x02, 0x03, 0x00};
+//    urData[4] =(unsigned char)ui->horizontalSlider_red->value();
+//    urData[5] =(unsigned char)ui->horizontalSlider_green->value();
+//    urData[6] =(unsigned char)ui->horizontalSlider_blue->value();
+//    urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
-    data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
-        socket->write(data);
-    }else{
-        QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
-    }
+//    data.append(urData);
+//    if(socket->isOpen() && socket->isWritable()){
+//        socket->write(data);
+//    }else{
+//        QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
+//    }
+    on_pushButton_static_light_clicked();
 }
 
 void Widget::on_pushButton_static_light_clicked()//常量灯按下
@@ -511,7 +574,7 @@ void Widget::on_pushButton_static_light_clicked()//常量灯按下
     if(socket->isOpen() && socket->isWritable()){
         socket->write(data);
     }else{
-        QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
+        QMessageBox::critical(this, tr("Error"), tr("[const light]:Can't write dev, Error!"));
     }
 }
 
@@ -530,7 +593,7 @@ void Widget::on_pushButton_dynamic_light_clicked()//呼吸灯按下
     if(socket->isOpen() && socket->isWritable()){
         socket->write(data);
     }else{
-        QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
+        QMessageBox::critical(this, tr("Error"), tr("[breath light]:Can't write dev, Error!"));
     }
 }
 
@@ -580,4 +643,58 @@ void Widget::on_pushButton_dust_elimination_clicked()
 void Widget::on_pushButton_logo_clicked()
 {
     QDesktopServices::openUrl(QUrl::fromLocalFile("http://www.advgene.com/"));//qt打开超链接，qt打开网页
+}
+
+void Widget::on_pushButton_color_1_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(1);
+    ui->horizontalSlider_green->setValue(255);
+    ui->horizontalSlider_blue->setValue(1);
+
+    send_lights_rgb_data(22, 1, 255, 1);
+
+}
+
+void Widget::on_pushButton_color_2_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(255);
+    ui->horizontalSlider_green->setValue(255);
+    ui->horizontalSlider_blue->setValue(1);
+
+    send_lights_rgb_data(22, 255, 255, 1);
+}
+
+void Widget::on_pushButton_color_3_clicked()
+{
+
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(255);
+    ui->horizontalSlider_green->setValue(150);
+    ui->horizontalSlider_blue->setValue(1);
+
+    send_lights_rgb_data(22, 255, 150, 1);
+}
+
+void Widget::on_pushButton_color_4_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(255);
+    ui->horizontalSlider_green->setValue(50);
+    ui->horizontalSlider_blue->setValue(1);
+
+    send_lights_rgb_data(22, 255, 50, 1);
 }

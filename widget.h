@@ -48,6 +48,12 @@ public:
     bool bluetoothConnectedFlag;
     void set_ui_disable(bool trueOrFlase);
     void send_fans_pwm_data(quint8 CMD, quint8 P1, quint8 P2, quint8 P3, quint8 P4);
+    void send_lights_rgb_data(quint8 CMD, quint8 R, quint8 G, quint8 B);
+    void disconnect_all_lights_signals(void);
+    void connect_all_lights_signals(void);
+    void connect_all_fans_slider_signals(void);
+    void disconnect_all_fans_slider_signals(void);
+
 signals:
     void signal_connect_bluetooth_with_addr(QBluetoothAddress BtAddress);
 
@@ -97,6 +103,14 @@ private slots:
 
     void on_pushButton_logo_clicked();
 
+    void on_pushButton_color_1_clicked();
+
+    void on_pushButton_color_2_clicked();
+
+    void on_pushButton_color_3_clicked();
+
+    void on_pushButton_color_4_clicked();
+
 private:
 
     Ui::Widget *ui;
@@ -109,6 +123,7 @@ private:
     QString comStr;
     QTimer *eliminatTimer;
     qint32 eliminateFansStatusFlag;
+    qint8 g_DontSendLightFlag[3];
 };
 
 #endif // WIDGET_H

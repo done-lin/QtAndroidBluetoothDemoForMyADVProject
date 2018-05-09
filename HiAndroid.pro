@@ -25,3 +25,7 @@ MOBILITY =
 RESOURCES += \
     qss.qrc
 
+DISTFILES += \
+    android-sources/AndroidManifest.xml
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android-sources
