@@ -111,6 +111,26 @@ private slots:
 
     void on_pushButton_color_4_clicked();
 
+    void on_pushButton_color_5_clicked();
+
+    void on_pushButton_color_6_clicked();
+
+    void on_pushButton_color_7_clicked();
+
+    void on_pushButton_color_8_clicked();
+
+    void on_pushButton_color_9_clicked();
+
+    void on_pushButton_color_10_clicked();
+
+    void on_pushButton_color_11_clicked();
+
+    void on_pushButton_color_12_clicked();
+
+    void on_pushButton_color_13_clicked();
+
+    void on_pushButton_color_14_clicked();
+
 private:
 
     Ui::Widget *ui;

@@ -698,3 +698,133 @@ void Widget::on_pushButton_color_4_clicked()
 
     send_lights_rgb_data(22, 255, 50, 1);
 }
+
+void Widget::on_pushButton_color_5_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(255);
+    ui->horizontalSlider_green->setValue(1);
+    ui->horizontalSlider_blue->setValue(1);
+
+    send_lights_rgb_data(22, 255, 1, 1);
+}
+
+void Widget::on_pushButton_color_6_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(50);
+    ui->horizontalSlider_green->setValue(1);
+    ui->horizontalSlider_blue->setValue(140);
+
+    send_lights_rgb_data(22, 50, 1, 140);
+}
+
+void Widget::on_pushButton_color_7_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(255);
+    ui->horizontalSlider_green->setValue(1);
+    ui->horizontalSlider_blue->setValue(50);
+
+    send_lights_rgb_data(22, 255, 1, 50);
+}
+
+void Widget::on_pushButton_color_8_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(255);
+    ui->horizontalSlider_green->setValue(1);
+    ui->horizontalSlider_blue->setValue(255);
+
+    send_lights_rgb_data(22, 255, 1, 255);
+}
+
+void Widget::on_pushButton_color_9_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(255);
+    ui->horizontalSlider_green->setValue(255);
+    ui->horizontalSlider_blue->setValue(255);
+
+    send_lights_rgb_data(22, 255, 255, 255);
+}
+
+void Widget::on_pushButton_color_10_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(1);
+    ui->horizontalSlider_green->setValue(160);
+    ui->horizontalSlider_blue->setValue(255);
+
+    send_lights_rgb_data(22, 1, 160, 255);
+}
+
+void Widget::on_pushButton_color_11_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(1);
+    ui->horizontalSlider_green->setValue(255);
+    ui->horizontalSlider_blue->setValue(255);
+
+    send_lights_rgb_data(22, 1, 255, 255);
+}
+
+void Widget::on_pushButton_color_12_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(1);
+    ui->horizontalSlider_green->setValue(100);
+    ui->horizontalSlider_blue->setValue(255);
+
+    send_lights_rgb_data(22, 1, 100, 255);
+}
+
+void Widget::on_pushButton_color_13_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(255);
+    ui->horizontalSlider_green->setValue(50);
+    ui->horizontalSlider_blue->setValue(1);
+
+    send_lights_rgb_data(22, 1, 30, 255);
+}
+
+void Widget::on_pushButton_color_14_clicked()
+{
+    g_DontSendLightFlag[0] = 1;
+    g_DontSendLightFlag[1] = 1;
+    g_DontSendLightFlag[2] = 1;
+
+    ui->horizontalSlider_red->setValue(1);
+    ui->horizontalSlider_green->setValue(1);
+    ui->horizontalSlider_blue->setValue(255);
+
+    send_lights_rgb_data(22, 1, 1, 255);
+}
