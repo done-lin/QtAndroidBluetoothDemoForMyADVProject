@@ -18,6 +18,7 @@
 #include <QRect>
 #include <QDesktopWidget>
 #include <QTimer>
+#include "settinghandler.h"
 
 
 #define MAX_LENGTH 256
@@ -40,6 +41,8 @@ public:
     void init_all_signals_and_slots(void);
     void init_all_sliders(void);
     void init_all_light_sliders(void);
+    USB_HID_DATA gCfgData;
+    pUSB_HID_DATA gpCfgData;
     QRect get_screen_size();
     QString loadStyleSheetQString(const QString &sheetName);
 
@@ -53,7 +56,9 @@ public:
     void connect_all_lights_signals(void);
     void connect_all_fans_slider_signals(void);
     void disconnect_all_fans_slider_signals(void);
-
+    void send_cfg_data_to_dev(pUSB_HID_DATA pData);
+    void widget_get_cfg_data(void);
+    SettingHandler *btCfgData;
 signals:
     void signal_connect_bluetooth_with_addr(QBluetoothAddress BtAddress);
 
@@ -82,6 +87,7 @@ public slots:
 
     void slot_stop_agent_discovering(void);
     void slot_eliminate_dust_timeout(void);
+    void slot_upate_bt(void);
 
 private slots:
 
@@ -131,6 +137,10 @@ private slots:
 
     void on_pushButton_color_14_clicked();
 
+    void on_pushButton_combined_speed_clicked();
+
+    void on_pushButton_indepandent_speed_clicked();
+
 private:
 
     Ui::Widget *ui;
@@ -142,8 +152,10 @@ private:
     unsigned int  comCount;
     QString comStr;
     QTimer *eliminatTimer;
+    QTimer *updateBtTimer;
     qint32 eliminateFansStatusFlag;
     qint8 g_DontSendLightFlag[3];
+    qint32 combineSpeedFlag;
 };
 
 #endif // WIDGET_H

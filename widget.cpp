@@ -6,6 +6,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QDesktopServices>
+#include "settinghandler.h"
 
 
 Widget::Widget(QWidget *parent) :
@@ -26,6 +27,8 @@ Widget::Widget(QWidget *parent) :
     comStr.clear();//情况通信用的数据数组
     mItems.clear();//清空用于搜索蓝牙设备的item（QListWidgetItem）
     eliminatTimer = new QTimer();
+    updateBtTimer = new QTimer();
+
     bluetoothConnectedFlag = false;
 
     if( localDevice->hostMode() == QBluetoothLocalDevice::HostDiscoverable ) {//如果可以被发现
@@ -44,6 +47,7 @@ Widget::Widget(QWidget *parent) :
     this->setStyleSheet(loadStyleSheetQString(":/dark.qss"));
     set_ui_disable(true);
     on_pushButton_scan_clicked();//打开程序马上扫描蓝牙设备
+    widget_get_cfg_data();
 }
 
 Widget::~Widget()
@@ -151,11 +155,14 @@ void Widget::bluetoothConnectedEvent()//蓝牙连接成功提示
     qDebug() << "The android device has been connected successfully!";
     set_ui_disable(false);
     QMessageBox::information(this,tr("Info"),tr("Successful connection!"), QMessageBox::Ok);
+    updateBtTimer->start(3000);
+    send_cfg_data_to_dev(gpCfgData);
 }
 
 void Widget::bluetoothDisconnectedEvent()//蓝牙断开连接提示
 {
     qDebug() << "The android device has been disconnected successfully!";
+    updateBtTimer->stop();
     QMessageBox::information(this,tr("Info"),tr("Bluetooth Disconnected!"), QMessageBox::Ok);
 }
 
@@ -179,32 +186,57 @@ void Widget::on_pushButton_clear_clicked()//清除列表的内容，清除两个
 
 void Widget::slot_send_slider_value_1(int val)//发送风扇1的转速数据
 {
-    QByteArray data;
-    data.clear();
-
-    char urData[]={static_cast<int8_t>(0xff), 0x05, 0x04, 0x01, 0x02, 0x03, 0x04, 0x00};
-    urData[3] =(unsigned char)val;
-    urData[4] =(unsigned char)ui->horizontalSlider_p2->value();
-    urData[5] =(unsigned char)ui->horizontalSlider_p3->value();
-    urData[6] =(unsigned char)ui->horizontalSlider_p4->value();
-    urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
-
-    data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
-        socket->write(data);
-    }else{
-        //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
+    int tmpVal = val;
+    if(val > 255 * 0.50f){
+        if(ui->checkBox_enhanced_mode->isChecked()){
+            ui->horizontalSlider_p1->blockSignals(true);
+            tmpVal = (int)(255*0.50f);
+            ui->horizontalSlider_p1->setValue(tmpVal);
+            ui->horizontalSlider_p1->blockSignals(false);
+        }
     }
+
+
+        QByteArray data;
+        data.clear();
+
+        char urData[]={static_cast<int8_t>(0xff), 0x05, 0x04, 0x01, 0x02, 0x03, 0x04, 0x00};
+        urData[3] =(unsigned char)tmpVal;
+        urData[4] =(unsigned char)ui->horizontalSlider_p2->value();
+        urData[5] =(unsigned char)ui->horizontalSlider_p3->value();
+        urData[6] =(unsigned char)ui->horizontalSlider_p4->value();
+        urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
+
+        data.append(urData);
+        if(socket->isOpen() && socket->isWritable()){
+            socket->write(data);
+        }else{
+            //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
+        }
+
+        if(ui->checkBox_allowed_saving->isChecked()){
+            btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
+        }
 }
 
 void Widget::slot_send_slider_value_2(int val)//发送风扇2的转速数据
 {
+    int tmpVal = val;
+    if(val > 255 * 0.50f){
+        if(ui->checkBox_enhanced_mode->isChecked()){
+            ui->horizontalSlider_p2->blockSignals(true);
+            tmpVal = (int)(255*0.50f);
+            ui->horizontalSlider_p2->setValue(tmpVal);
+            ui->horizontalSlider_p2->blockSignals(false);
+        }
+    }
+
     QByteArray data;
     data.clear();
 
     char urData[]={static_cast<int8_t>(0xff), 0x06, 0x04, 0x01, 0x02, 0x03, 0x04, 0x00};
     urData[3] =(unsigned char)ui->horizontalSlider_p1->value();
-    urData[4] =(unsigned char)val;
+    urData[4] =(unsigned char)tmpVal;
     urData[5] =(unsigned char)ui->horizontalSlider_p3->value();
     urData[6] =(unsigned char)ui->horizontalSlider_p4->value();
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
@@ -215,10 +247,23 @@ void Widget::slot_send_slider_value_2(int val)//发送风扇2的转速数据
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
     }
+    if(ui->checkBox_allowed_saving->isChecked()){
+        btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
+    }
 }
 
 void Widget::slot_send_slider_value_3(int val)//发送风扇3的转速数据
 {
+    int tmpVal = val;
+    if(val > 255 * 0.50f){
+        if(ui->checkBox_enhanced_mode->isChecked()){
+            ui->horizontalSlider_p3->blockSignals(true);
+            tmpVal = (int)(255*0.50f);
+            ui->horizontalSlider_p3->setValue(tmpVal);
+            ui->horizontalSlider_p3->blockSignals(false);
+        }
+    }
+
     QByteArray data;
     data.clear();
 
@@ -235,18 +280,32 @@ void Widget::slot_send_slider_value_3(int val)//发送风扇3的转速数据
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
     }
+
+    if(ui->checkBox_allowed_saving->isChecked()){
+        btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
+    }
 }
 
 void Widget::slot_send_slider_value_4(int val)//发送风扇4的转速数据
 {
+    int tmpVal = val;
+    if(val > 255 * 0.50f){
+        if(ui->checkBox_enhanced_mode->isChecked()){
+            ui->horizontalSlider_p4->blockSignals(true);
+            tmpVal = (int)(255*0.50f);
+            ui->horizontalSlider_p4->setValue(tmpVal);
+            ui->horizontalSlider_p4->blockSignals(false);
+        }
+    }
+
     QByteArray data;
     data.clear();
 
-    char urData[]={static_cast<int8_t>(0xff), 0x05, 0x04, 0x01, 0x02, 0x03, 0x04, 0x00};
+    char urData[]={static_cast<int8_t>(0xff), 0x08, 0x04, 0x01, 0x02, 0x03, 0x04, 0x00};
     urData[3] =(unsigned char)ui->horizontalSlider_p1->value();
     urData[4] =(unsigned char)ui->horizontalSlider_p2->value();
     urData[5] =(unsigned char)ui->horizontalSlider_p3->value();
-    urData[6] =(unsigned char)val;
+    urData[6] =(unsigned char)tmpVal;
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
     data.append(urData);
@@ -254,6 +313,10 @@ void Widget::slot_send_slider_value_4(int val)//发送风扇4的转速数据
         socket->write(data);
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
+    }
+
+    if(ui->checkBox_allowed_saving->isChecked()){
+        btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
     }
 }
 
@@ -363,6 +426,23 @@ void Widget::slot_eliminate_dust_timeout()
     }
 }
 
+void Widget::slot_upate_bt()
+{
+
+    QByteArray data;
+    data.clear();
+
+    char urData[]={static_cast<int8_t>(0xff), 0xbb, 0x02, 0xaa, 0x55, 0x00};
+    urData[5] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4];
+
+    data.append(urData);
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
+        socket->write(data);
+    }else{
+        QMessageBox::critical(this, tr("Error"), tr("[bt update]:Can't write dev, Error!"));
+    }
+}
+
 void Widget::init_all_signals_and_slots()
 {
     connect(discoveryAgent, SIGNAL(deviceDiscovered(QBluetoothDeviceInfo)),//每次发现就会调用添加槽函数
@@ -387,6 +467,7 @@ void Widget::init_all_signals_and_slots()
     connect_all_lights_signals();
 
     connect(eliminatTimer, SIGNAL(timeout()), SLOT(slot_eliminate_dust_timeout()));
+    connect(updateBtTimer, SIGNAL(timeout()), SLOT(slot_upate_bt()));
 }
 
 void Widget::init_all_sliders()//初始化各个slider，初始化步进和范围
@@ -521,6 +602,61 @@ void Widget::disconnect_all_fans_slider_signals()
     disconnect(ui->horizontalSlider_p2, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_2(int)));
     disconnect(ui->horizontalSlider_p3, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_3(int)));
     disconnect(ui->horizontalSlider_p4, SIGNAL(valueChanged(int)), this, SLOT(slot_send_slider_value_4(int)));
+}
+
+void Widget::send_cfg_data_to_dev(pUSB_HID_DATA pData)
+{
+    //////////////// fans ///////////////
+    ui->horizontalSlider_p1->blockSignals(true);
+    ui->horizontalSlider_p2->blockSignals(true);
+    ui->horizontalSlider_p3->blockSignals(true);
+    ui->horizontalSlider_p4->blockSignals(true);
+    slot_send_slider_value_3(pData->P3PWM);
+    ui->horizontalSlider_p1->setValue(pData->P1PWM);
+    ui->horizontalSlider_p1->setValue(pData->P2PWM);
+    ui->horizontalSlider_p1->setValue(pData->P3PWM);
+    ui->horizontalSlider_p1->setValue(pData->P4PWM);
+            
+    ui->horizontalSlider_p1->blockSignals(false);
+    ui->horizontalSlider_p2->blockSignals(false);
+    ui->horizontalSlider_p3->blockSignals(false);
+    ui->horizontalSlider_p4->blockSignals(false);
+    //////////////// lights /////////////////
+    if(pData->lightsMode != 1){
+        ui->horizontalSlider_red->blockSignals(true);
+        ui->horizontalSlider_green->blockSignals(true);
+        ui->horizontalSlider_blue->blockSignals(true);
+
+        ui->horizontalSlider_red->setValue(pData->Light1_Red_PWM);
+        ui->horizontalSlider_green->setValue(pData->Light1_Green_PWM);
+        ui->horizontalSlider_blue->setValue(pData->Light1_Blue_PWM);
+
+        send_lights_rgb_data(22, pData->Light1_Red_PWM, pData->Light1_Green_PWM, pData->Light1_Blue_PWM);
+
+        ui->horizontalSlider_red->blockSignals(false);
+        ui->horizontalSlider_green->blockSignals(false);
+        ui->horizontalSlider_blue->blockSignals(false);
+
+        if(pData->lightsMode == 3){
+            on_pushButton_dynamic_light_clicked();
+        }else if(pData->lightsMode == 2){
+            on_pushButton_static_light_clicked();
+        }else{
+            on_pushButton_lights_off_clicked();
+        }
+    }else{
+        on_pushButton_lights_off_clicked();
+    }
+
+
+}
+
+void Widget::widget_get_cfg_data()
+{
+    btCfgData = new SettingHandler();
+    memset(&gCfgData, 0, sizeof(USB_HID_DATA));
+    gCfgData = btCfgData->load_config_data_from_setting_file(DEF_CONFIG_INI_FILE_PATH);
+    gpCfgData = &gCfgData;
 }
 
 void Widget::on_pushButton_lights_off_clicked()//按下关灯按钮
@@ -827,4 +963,18 @@ void Widget::on_pushButton_color_14_clicked()
     ui->horizontalSlider_blue->setValue(255);
 
     send_lights_rgb_data(22, 1, 1, 255);
+}
+
+void Widget::on_pushButton_combined_speed_clicked()
+{
+    ui->pushButton_combined_speed->setStyleSheet(loadStyleSheetQString(":/button_selected.qss"));
+    ui->pushButton_indepandent_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    combineSpeedFlag = 1;
+}
+
+void Widget::on_pushButton_indepandent_speed_clicked()
+{
+    ui->pushButton_indepandent_speed->setStyleSheet(loadStyleSheetQString(":/button_selected.qss"));
+    ui->pushButton_combined_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+    combineSpeedFlag = 0;
 }
