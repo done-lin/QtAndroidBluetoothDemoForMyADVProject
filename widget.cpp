@@ -156,7 +156,7 @@ void Widget::bluetoothConnectedEvent()//蓝牙连接成功提示
     set_ui_disable(false);
     QMessageBox::information(this,tr("Info"),tr("Successful connection!"), QMessageBox::Ok);
     updateBtTimer->start(3000);
-    send_cfg_data_to_dev(gpCfgData);
+    //send_cfg_data_to_dev(gpCfgData);
 }
 
 void Widget::bluetoothDisconnectedEvent()//蓝牙断开连接提示
@@ -188,7 +188,7 @@ void Widget::slot_send_slider_value_1(int val)//发送风扇1的转速数据
 {
     int tmpVal = val;
     if(val > 255 * 0.50f){
-        if(ui->checkBox_enhanced_mode->isChecked()){
+        if(!ui->checkBox_enhanced_mode->isChecked()){
             ui->horizontalSlider_p1->blockSignals(true);
             tmpVal = (int)(255*0.50f);
             ui->horizontalSlider_p1->setValue(tmpVal);
@@ -223,7 +223,7 @@ void Widget::slot_send_slider_value_2(int val)//发送风扇2的转速数据
 {
     int tmpVal = val;
     if(val > 255 * 0.50f){
-        if(ui->checkBox_enhanced_mode->isChecked()){
+        if(!ui->checkBox_enhanced_mode->isChecked()){
             ui->horizontalSlider_p2->blockSignals(true);
             tmpVal = (int)(255*0.50f);
             ui->horizontalSlider_p2->setValue(tmpVal);
@@ -256,7 +256,7 @@ void Widget::slot_send_slider_value_3(int val)//发送风扇3的转速数据
 {
     int tmpVal = val;
     if(val > 255 * 0.50f){
-        if(ui->checkBox_enhanced_mode->isChecked()){
+        if(!ui->checkBox_enhanced_mode->isChecked()){
             ui->horizontalSlider_p3->blockSignals(true);
             tmpVal = (int)(255*0.50f);
             ui->horizontalSlider_p3->setValue(tmpVal);
@@ -270,7 +270,7 @@ void Widget::slot_send_slider_value_3(int val)//发送风扇3的转速数据
     char urData[]={static_cast<int8_t>(0xff), 0x07, 0x04, 0x01, 0x02, 0x03, 0x04, 0x00};
     urData[3] =(unsigned char)ui->horizontalSlider_p1->value();
     urData[4] =(unsigned char)ui->horizontalSlider_p2->value();
-    urData[5] =(unsigned char)val;
+    urData[5] =(unsigned char)tmpVal;
     urData[6] =(unsigned char)ui->horizontalSlider_p4->value();
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
@@ -290,7 +290,7 @@ void Widget::slot_send_slider_value_4(int val)//发送风扇4的转速数据
 {
     int tmpVal = val;
     if(val > 255 * 0.50f){
-        if(ui->checkBox_enhanced_mode->isChecked()){
+        if(!ui->checkBox_enhanced_mode->isChecked()){
             ui->horizontalSlider_p4->blockSignals(true);
             tmpVal = (int)(255*0.50f);
             ui->horizontalSlider_p4->setValue(tmpVal);
