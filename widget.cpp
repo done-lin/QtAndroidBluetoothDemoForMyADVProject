@@ -84,8 +84,9 @@ void Widget::addBlueToothDevicesToList( const QBluetoothDeviceInfo &info )
         QBluetoothLocalDevice::Pairing pairingStatus = localDevice->pairingStatus(info.address());//查询蓝牙是否被枚举过
         if (pairingStatus == QBluetoothLocalDevice::Paired || pairingStatus == QBluetoothLocalDevice::AuthorizedPaired ){
             item->setTextColor(QColor(Qt::green));//如果此地址的蓝牙是配对过的，显示绿色
-            if(tmplabel.endsWith("ADVGENE_BT")){//如果查询到名字是adv的，我们自动连接
+            if(tmplabel.contains("ADVGENE_BT")){//如果查询到名字是adv的，我们自动连接
                 set_ui_disable(false);
+                g_BtAddress = info.address();
                 emit signal_connect_bluetooth_with_addr(info.address());
             }
         } else {
@@ -152,18 +153,21 @@ void Widget::readBluetoothDataEvent()//读出蓝牙发过来的数据
 
 void Widget::bluetoothConnectedEvent()//蓝牙连接成功提示
 {
-    qDebug() << "The android device has been connected successfully!";
+    //qDebug() << "The android device has been connected successfully!";
     set_ui_disable(false);
-    QMessageBox::information(this,tr("Info"),tr("Successful connection!"), QMessageBox::Ok);
-    updateBtTimer->start(3000);
+    reconnectBtTimer->stop();//停止蓝牙重新连接定时器.
+    QMessageBox::information(this,tr("Info"),tr("OK, BT Connected!"), QMessageBox::Ok);
+    updateBtTimer->start(3000);//蓝牙心跳3s
     //send_cfg_data_to_dev(gpCfgData);
+    on_pushButton_manual_speed_clicked();
 }
 
 void Widget::bluetoothDisconnectedEvent()//蓝牙断开连接提示
 {
-    qDebug() << "The android device has been disconnected successfully!";
+    //qDebug() << "The android device has been disconnected successfully!";
     updateBtTimer->stop();
-    QMessageBox::information(this,tr("Info"),tr("Bluetooth Disconnected!"), QMessageBox::Ok);
+    QMessageBox::information(this,tr("Warnning!"),tr("ADVGENE Bluetooth Disconnected!\nPlease reconnect again!"), QMessageBox::Ok);
+    reconnectBtTimer->start(8000);
 }
 
 void Widget::on_pushButton_disconnect_clicked()//蓝牙断开连接
@@ -208,7 +212,7 @@ void Widget::slot_send_slider_value_1(int val)//发送风扇1的转速数据
         urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
         data.append(urData);
-        if(socket->isOpen() && socket->isWritable()){
+        if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
             socket->write(data);
         }else{
             //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
@@ -242,7 +246,7 @@ void Widget::slot_send_slider_value_2(int val)//发送风扇2的转速数据
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
@@ -275,7 +279,7 @@ void Widget::slot_send_slider_value_3(int val)//发送风扇3的转速数据
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
@@ -309,7 +313,7 @@ void Widget::slot_send_slider_value_4(int val)//发送风扇4的转速数据
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
@@ -336,7 +340,7 @@ void Widget::slot_send_light_red_value_1(int val)
     urData[6] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
@@ -359,7 +363,7 @@ void Widget::slot_send_light_green_value_1(int val)
     urData[6] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
@@ -382,7 +386,7 @@ void Widget::slot_send_light_blue_value_1(int val)
     urData[6] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable()&& false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
@@ -443,6 +447,17 @@ void Widget::slot_upate_bt()
     }
 }
 
+void Widget::slot_reconnect_bt()
+{
+    if(g_BtAddress.isNull()){
+        reconnectBtTimer->stop();
+        QMessageBox::critical(this, tr("Error"), tr("[bt reconnect]:Can't found BT! Please connect manually!"));
+    }else{
+        slot_connect_bluteooth(g_BtAddress);
+    }
+
+}
+
 void Widget::init_all_signals_and_slots()
 {
     connect(discoveryAgent, SIGNAL(deviceDiscovered(QBluetoothDeviceInfo)),//每次发现就会调用添加槽函数
@@ -468,6 +483,7 @@ void Widget::init_all_signals_and_slots()
 
     connect(eliminatTimer, SIGNAL(timeout()), SLOT(slot_eliminate_dust_timeout()));
     connect(updateBtTimer, SIGNAL(timeout()), SLOT(slot_upate_bt()));
+    connect(reconnectBtTimer, SIGNAL(timeout()), SLOT(slot_reconnect_bt()));
 }
 
 void Widget::init_all_sliders()//初始化各个slider，初始化步进和范围
@@ -547,7 +563,7 @@ void Widget::send_fans_pwm_data(quint8 CMD, quint8 P1, quint8 P2, quint8 P3, qui
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[send_fans_pwm_data]:Can't write dev, Error!"));
@@ -567,10 +583,28 @@ void Widget::send_lights_rgb_data(quint8 CMD, quint8 R, quint8 G, quint8 B)
     urData[6] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[send_lights_rgb_data]:Can't write dev, Error!"));
+    }
+}
+
+void Widget::send_destory_cmd(int cmd)
+{
+    QByteArray data;
+    data.clear();
+
+    char urData[]={static_cast<int8_t>(0xff), 0x44, 0x01, 0x44, 0x01};
+    urData[1] = 0x44;
+    urData[3] = static_cast<int8_t>(cmd);
+    urData[4] = urData[0]^urData[1]^urData[2]^urData[3];
+
+    data.append(urData);
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
+        socket->write(data);
+    }else{
+        QMessageBox::critical(this, tr("Error"), tr("Destory CMD:Can't write dev, Error!"));
     }
 }
 
@@ -668,11 +702,12 @@ void Widget::on_pushButton_lights_off_clicked()//按下关灯按钮
     urData[4] = urData[0]^urData[1]^urData[2]^urData[3];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[light off]:Can't write dev, Error!"));
     }
+
 }
 
 void Widget::on_pushButton_lights_up_clicked()//按下开灯按钮
@@ -707,7 +742,7 @@ void Widget::on_pushButton_static_light_clicked()//常量灯按下
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[const light]:Can't write dev, Error!"));
@@ -726,7 +761,7 @@ void Widget::on_pushButton_dynamic_light_clicked()//呼吸灯按下
     urData[7] = urData[0]^urData[1]^urData[2]^urData[3]^urData[4]^urData[5]^urData[6];
 
     data.append(urData);
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(data);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[breath light]:Can't write dev, Error!"));
@@ -736,7 +771,7 @@ void Widget::on_pushButton_dynamic_light_clicked()//呼吸灯按下
 void Widget::on_pushButton_send_data_clicked()//数据发送键按下，获取text linedit的数据发送出去
 {
     QByteArray arrayData = ui->lineEdit_data_to_be_sent->text().toUtf8();
-    if(socket->isOpen() && socket->isWritable()){
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
         socket->write(arrayData);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("Erro! Device unreachable!"), QMessageBox::Ok);

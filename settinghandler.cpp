@@ -1,13 +1,24 @@
 #include "settinghandler.h"
+#include "QtAndroidExtras/QtAndroid"
+#include "QStandardPaths"
+#include <QMessageBox>
 
 SettingHandler::SettingHandler(QObject *parent) : QObject(parent)
 {
-    init_config_data_settings_file(DEF_CONFIG_INI_FILE_PATH);
+    if(check_android_writable_location().isEmpty()){
+        ;
+    }else{
+       init_config_data_settings_file(DEF_CONFIG_INI_FILE_PATH);
+    }
+
+
 }
 
 USB_HID_DATA SettingHandler::load_config_data_from_setting_file(QString fileName)
 {
-    QSettings settings(fileName, QSettings::IniFormat);
+    QString tmpNewFileName;
+    tmpNewFileName = writableLocationString+fileName;
+    QSettings settings(tmpNewFileName, QSettings::NativeFormat);
     settings.beginGroup("config");
     mConfigData.encryption = settings.value("encryption").toUInt();
     mConfigData.DirtyFlag = settings.value("DirtyFlag").toUInt();
@@ -60,7 +71,9 @@ USB_HID_DATA SettingHandler::load_config_data_from_setting_file(QString fileName
 
 void SettingHandler::save_config_data_to_setting_file(QString fileName, pUSB_HID_DATA pData)
 {
-    QSettings settings(fileName, QSettings::IniFormat);
+    QString tmpNewFileName;
+    tmpNewFileName = writableLocationString+fileName;
+    QSettings settings(tmpNewFileName, QSettings::NativeFormat);
     settings.beginGroup("config");
     settings.setValue("encryption", pData->encryption);
     settings.setValue("DirtyFlag", pData->DirtyFlag);
@@ -113,10 +126,13 @@ void SettingHandler::save_config_data_to_setting_file(QString fileName, pUSB_HID
 
 void SettingHandler::init_config_data_settings_file(QString fileName)
 {
-    QSettings settings(fileName, QSettings::IniFormat);
+    QString tmpNewFileName;
+    tmpNewFileName = writableLocationString+fileName;
+    QSettings settings(tmpNewFileName, QSettings::NativeFormat);
     settings.beginGroup("config");
 
     if(settings.value("flag").toInt() != 1024){
+        QMessageBox::warning(0, tr("Localtion"), "Data not exisit!\n"+tmpNewFileName, QMessageBox::Ok);
         settings.setValue("flag", 1024);
         settings.setValue("encryption", 0);
         settings.setValue("DirtyFlag", 0);
@@ -169,7 +185,11 @@ void SettingHandler::init_config_data_settings_file(QString fileName)
 
 void SettingHandler::save_fans_config_data_to_setting_file(QString fileName, pUSB_HID_DATA pData)
 {
-    QSettings settings(fileName, QSettings::IniFormat);
+    QString tmpNewFileName;
+    tmpNewFileName = writableLocationString+fileName;
+    QSettings settings(tmpNewFileName, QSettings::NativeFormat);
+
+    QMessageBox::warning(0, tr("saving fans"), tmpNewFileName, QMessageBox::Ok);
     settings.beginGroup("config");
 
     settings.setValue("fansMode", pData->fansMode);
@@ -189,7 +209,11 @@ void SettingHandler::save_fans_config_data_to_setting_file(QString fileName, pUS
 
 void SettingHandler::save_lights_config_data_to_setting_file(QString fileName, pUSB_HID_DATA pData)
 {
-    QSettings settings(fileName, QSettings::IniFormat);
+    QString tmpNewFileName;
+    tmpNewFileName = writableLocationString+fileName;
+    QSettings settings(tmpNewFileName, QSettings::NativeFormat);
+
+    QMessageBox::warning(0, tr("saving lights"), tmpNewFileName, QMessageBox::Ok);
     settings.beginGroup("config");
 
     settings.setValue("lightsMode", pData->lightsMode);
@@ -208,4 +232,19 @@ void SettingHandler::save_lights_config_data_to_setting_file(QString fileName, p
 
     settings.endGroup();
     settings.sync();
+}
+
+QString SettingHandler::check_android_writable_location()
+{
+    writableLocationString.clear();
+    if(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).isEmpty()){
+        QMessageBox::critical(0, tr("Error"), "no writable locations for setting file", QMessageBox::Ok);
+        writableLocationString.clear();
+    }else{
+        writableLocationString.clear();
+        writableLocationString.append(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+        //writableLocationString.append('/');
+        QMessageBox::warning(0, tr("Localtion"), writableLocationString, QMessageBox::Ok);
+    }
+    return writableLocationString;
 }

@@ -16,13 +16,14 @@ public:
     void init_config_data_settings_file(QString fileName);
     void save_fans_config_data_to_setting_file(QString fileName, pUSB_HID_DATA pData);
     void save_lights_config_data_to_setting_file(QString fileName, pUSB_HID_DATA pData);
+    QString check_android_writable_location(void);
 signals:
 
 public slots:
 
 private:
     USB_HID_DATA mConfigData;
-
+    QString writableLocationString;
 };
 
 #endif // SETTINGHANDLER_H

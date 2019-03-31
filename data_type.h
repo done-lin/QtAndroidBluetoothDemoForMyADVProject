@@ -1,7 +1,7 @@
 #ifndef DATA_TYPE_H
 #define DATA_TYPE_H
 
-#define DEF_CONFIG_INI_FILE_PATH "./AdvGene_cfg_17RV01.ini"
+#define DEF_CONFIG_INI_FILE_PATH "AdvGene_cfg_17RV01.ini"
 //usb控制通信，并行角度来讲，就是分3种控制：1：控制风扇，2：控制灯；3：控制存储
 typedef struct usb_communication_data{
     unsigned char encryption;//usb通信数据用的明文加密钥匙1:  目前xor加密即可

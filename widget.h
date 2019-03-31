@@ -52,6 +52,7 @@ public:
     void set_ui_disable(bool trueOrFlase);
     void send_fans_pwm_data(quint8 CMD, quint8 P1, quint8 P2, quint8 P3, quint8 P4);
     void send_lights_rgb_data(quint8 CMD, quint8 R, quint8 G, quint8 B);
+    void send_destory_cmd(int cmd);
     void disconnect_all_lights_signals(void);
     void connect_all_lights_signals(void);
     void connect_all_fans_slider_signals(void);
@@ -59,6 +60,7 @@ public:
     void send_cfg_data_to_dev(pUSB_HID_DATA pData);
     void widget_get_cfg_data(void);
     SettingHandler *btCfgData;
+    QBluetoothAddress g_BtAddress;
 signals:
     void signal_connect_bluetooth_with_addr(QBluetoothAddress BtAddress);
 
@@ -88,7 +90,7 @@ public slots:
     void slot_stop_agent_discovering(void);
     void slot_eliminate_dust_timeout(void);
     void slot_upate_bt(void);
-
+    void slot_reconnect_bt(void);
 private slots:
 
     void on_pushButton_lights_off_clicked();
@@ -153,6 +155,7 @@ private:
     QString comStr;
     QTimer *eliminatTimer;
     QTimer *updateBtTimer;
+    QTimer *reconnectBtTimer;
     qint32 eliminateFansStatusFlag;
     qint8 g_DontSendLightFlag[3];
     qint32 combineSpeedFlag;

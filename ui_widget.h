@@ -34,7 +34,7 @@ class Ui_Widget
 {
 public:
     QGridLayout *gridLayout_9;
-    QVBoxLayout *verticalLayout_4;
+    QGridLayout *gridLayout_11;
     QPushButton *pushButton_logo;
     QTabWidget *tabWidget;
     QWidget *tab;
@@ -131,14 +131,14 @@ public:
         gridLayout_9->setSpacing(6);
         gridLayout_9->setContentsMargins(11, 11, 11, 11);
         gridLayout_9->setObjectName(QStringLiteral("gridLayout_9"));
-        verticalLayout_4 = new QVBoxLayout();
-        verticalLayout_4->setSpacing(8);
-        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
-        verticalLayout_4->setSizeConstraint(QLayout::SetDefaultConstraint);
+        gridLayout_11 = new QGridLayout();
+        gridLayout_11->setSpacing(6);
+        gridLayout_11->setObjectName(QStringLiteral("gridLayout_11"));
+        gridLayout_11->setSizeConstraint(QLayout::SetDefaultConstraint);
         pushButton_logo = new QPushButton(Widget);
         pushButton_logo->setObjectName(QStringLiteral("pushButton_logo"));
 
-        verticalLayout_4->addWidget(pushButton_logo);
+        gridLayout_11->addWidget(pushButton_logo, 0, 0, 1, 1);
 
         tabWidget = new QTabWidget(Widget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
@@ -735,12 +735,10 @@ public:
 
         tabWidget->addTab(tab_3, QString());
 
-        verticalLayout_4->addWidget(tabWidget);
+        gridLayout_11->addWidget(tabWidget, 1, 0, 1, 1);
 
-        verticalLayout_4->setStretch(0, 1);
-        verticalLayout_4->setStretch(1, 7);
 
-        gridLayout_9->addLayout(verticalLayout_4, 1, 1, 1, 2);
+        gridLayout_9->addLayout(gridLayout_11, 0, 0, 1, 1);
 
 
         retranslateUi(Widget);

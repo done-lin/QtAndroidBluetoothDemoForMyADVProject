@@ -6,7 +6,7 @@
 
 QT       += core gui
 QT      += bluetooth
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets network
 
 TARGET = HiAndroid
 TEMPLATE = app
