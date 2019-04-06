@@ -2,6 +2,7 @@
 #include "QtAndroidExtras/QtAndroid"
 #include "QStandardPaths"
 #include <QMessageBox>
+#include <permissions.h>
 
 SettingHandler::SettingHandler(QObject *parent) : QObject(parent)
 {
@@ -237,14 +238,32 @@ void SettingHandler::save_lights_config_data_to_setting_file(QString fileName, p
 QString SettingHandler::check_android_writable_location()
 {
     writableLocationString.clear();
-    if(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).isEmpty()){
-        QMessageBox::critical(0, tr("Error"), "no writable locations for setting file", QMessageBox::Ok);
+    if(false == check_SDCard_permission()){
+        QMessageBox::critical(0, tr("Error"), "No SDCard permission! exit", QMessageBox::Ok);
+        return writableLocationString;
+    }
+    if(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).isEmpty()){
+        QMessageBox::critical(0, tr("Error"), "No Android writable locations is empty", QMessageBox::Ok);
         writableLocationString.clear();
     }else{
         writableLocationString.clear();
-        writableLocationString.append(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-        //writableLocationString.append('/');
-        QMessageBox::warning(0, tr("Localtion"), writableLocationString, QMessageBox::Ok);
+        writableLocationString.append(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+        writableLocationString.append('/');
+        QMessageBox::warning(0, tr("Get Localtion OK"), writableLocationString, QMessageBox::Ok);
     }
     return writableLocationString;
+}
+
+
+
+bool SettingHandler::check_SDCard_permission() {
+    QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+    if(r == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
+        r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+        if(r == QtAndroid::PermissionResult::Denied) {
+             return false;
+        }
+   }
+   return true;
 }

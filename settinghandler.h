@@ -17,6 +17,7 @@ public:
     void save_fans_config_data_to_setting_file(QString fileName, pUSB_HID_DATA pData);
     void save_lights_config_data_to_setting_file(QString fileName, pUSB_HID_DATA pData);
     QString check_android_writable_location(void);
+    bool check_SDCard_permission();
 signals:
 
 public slots:

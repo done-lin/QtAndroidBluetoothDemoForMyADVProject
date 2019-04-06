@@ -6,6 +6,9 @@
 #include <QThread>
 #include <QTimer>
 #include <QDesktopServices>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QNetworkAccessManager>
 #include "settinghandler.h"
 
 
@@ -23,19 +26,22 @@ Widget::Widget(QWidget *parent) :
     g_DontSendLightFlag[0] = 0;
     g_DontSendLightFlag[1] = 0;
     g_DontSendLightFlag[2] = 0;
-
+    btCfgData = Q_NULLPTR;
     comStr.clear();//情况通信用的数据数组
     mItems.clear();//清空用于搜索蓝牙设备的item（QListWidgetItem）
     eliminatTimer = new QTimer();
     updateBtTimer = new QTimer();
+    reconnectBtTimer = new QTimer();
+    QMessageBox::critical(this, tr("Error"), tr("step 001"));//add for test
 
     bluetoothConnectedFlag = false;
-
+    QMessageBox::critical(this, tr("Error"), tr("step 002"));//add for test
     if( localDevice->hostMode() == QBluetoothLocalDevice::HostDiscoverable ) {//如果可以被发现
         ui->checkBox_discoverable->setCheckable(true);//那么被发现checkbox打勾
     }else {
         ui->checkBox_discoverable->setCheckable(false);//不打勾
     }
+    QMessageBox::critical(this, tr("Error"), tr("step 003"));//add for test
     get_screen_size();//获得deskRect和screenRect数据，大多数情况，两个数据的长宽是一样的
     init_all_sliders();//初始化各个slider
     init_all_light_sliders();//初始化各个灯的滑动条
@@ -46,8 +52,15 @@ Widget::Widget(QWidget *parent) :
     init_all_signals_and_slots();//初始化相关信号与槽
     this->setStyleSheet(loadStyleSheetQString(":/dark.qss"));
     set_ui_disable(true);
+    QMessageBox::critical(this, tr("Error"), tr("step 004"));//add for test
     on_pushButton_scan_clicked();//打开程序马上扫描蓝牙设备
+    QMessageBox::critical(this, tr("Error"), tr("step 005"));//add for test
     widget_get_cfg_data();
+    QMessageBox::critical(this, tr("Error"), tr("step 006"));//add for test
+    m_GetWebInfo.sendRequest("https://blog.csdn.net/mynameislinduan/article/details/88920324");
+    connect(&m_GetWebInfo, SIGNAL(signal_requestFinished(bool,QString)), this, SLOT(slot_request_finished(bool,QString)));
+    QMessageBox::critical(this, tr("Error"), tr("step 007"));//add for test
+    ui->pushButton_logo->setEnabled(true);
 }
 
 Widget::~Widget()
@@ -63,6 +76,7 @@ void Widget::init_all_pushbutton()
 void Widget::on_pushButton_scan_clicked()//扫描附近的蓝牙设备
 {
     discoveryAgent->start();
+    QMessageBox::critical(this, tr("Error"), tr("step 008"));//add for test
     QTimer::singleShot(12000, this, SLOT(slot_stop_agent_discovering()));
     ui->pushButton_scan->setEnabled(false);
 }
@@ -155,11 +169,15 @@ void Widget::bluetoothConnectedEvent()//蓝牙连接成功提示
 {
     //qDebug() << "The android device has been connected successfully!";
     set_ui_disable(false);
-    reconnectBtTimer->stop();//停止蓝牙重新连接定时器.
+    if(reconnectBtTimer->isActive())
+        reconnectBtTimer->stop();//停止蓝牙重新连接定时器.
     QMessageBox::information(this,tr("Info"),tr("OK, BT Connected!"), QMessageBox::Ok);
     updateBtTimer->start(3000);//蓝牙心跳3s
-    //send_cfg_data_to_dev(gpCfgData);
+    on_pushButton_lights_up_clicked();
+    QThread::msleep(50);
     on_pushButton_manual_speed_clicked();
+    QThread::msleep(50);
+    send_cfg_data_to_dev(gpCfgData);
 }
 
 void Widget::bluetoothDisconnectedEvent()//蓝牙断开连接提示
@@ -218,7 +236,7 @@ void Widget::slot_send_slider_value_1(int val)//发送风扇1的转速数据
             //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
         }
 
-        if(ui->checkBox_allowed_saving->isChecked()){
+        if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
             btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
         }
 }
@@ -251,7 +269,7 @@ void Widget::slot_send_slider_value_2(int val)//发送风扇2的转速数据
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
     }
-    if(ui->checkBox_allowed_saving->isChecked()){
+    if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
         btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
     }
 }
@@ -285,7 +303,7 @@ void Widget::slot_send_slider_value_3(int val)//发送风扇3的转速数据
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
     }
 
-    if(ui->checkBox_allowed_saving->isChecked()){
+    if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
         btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
     }
 }
@@ -319,7 +337,7 @@ void Widget::slot_send_slider_value_4(int val)//发送风扇4的转速数据
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
     }
 
-    if(ui->checkBox_allowed_saving->isChecked()){
+    if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
         btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
     }
 }
@@ -456,6 +474,15 @@ void Widget::slot_reconnect_bt()
         slot_connect_bluteooth(g_BtAddress);
     }
 
+}
+
+void Widget::slot_request_finished(bool trueOrFalse, QString ret_text)
+{
+    if(trueOrFalse){
+        QMessageBox::critical(this, tr("WebInfo"), QString().sprintf("[Web info OK!],text length:%d", ret_text.length()));
+    }else{
+        QMessageBox::critical(this, tr("WebInfo"), QString().sprintf("[Web info ERROR! is NULL]"));
+    }
 }
 
 void Widget::init_all_signals_and_slots()
@@ -813,6 +840,7 @@ void Widget::on_pushButton_dust_elimination_clicked()
 
 void Widget::on_pushButton_logo_clicked()
 {
+    QMessageBox::critical(this, tr("Debug"), tr("on logo click"));
     QDesktopServices::openUrl(QUrl::fromLocalFile("http://www.advgene.com/"));//qt打开超链接，qt打开网页
 }
 
@@ -1012,4 +1040,19 @@ void Widget::on_pushButton_indepandent_speed_clicked()
     ui->pushButton_indepandent_speed->setStyleSheet(loadStyleSheetQString(":/button_selected.qss"));
     ui->pushButton_combined_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
     combineSpeedFlag = 0;
+}
+
+void Widget::on_pushButton_save_setting_clicked()
+{
+    QMessageBox::critical(this, tr("Debug"), tr("on_save_setting_clicked"));
+    if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
+        ui->pushButton_manual_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+        ui->pushButton_auto_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+        ui->pushButton_dust_elimination->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+        ui->pushButton_save_setting->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+        btCfgData->save_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
+    }else{
+        QMessageBox::critical(this, tr("Error"), tr("Please check the alow saving box status"));
+    }
+
 }

@@ -19,6 +19,7 @@
 #include <QDesktopWidget>
 #include <QTimer>
 #include "settinghandler.h"
+#include "advgetwebinfo.h"
 
 
 #define MAX_LENGTH 256
@@ -91,6 +92,7 @@ public slots:
     void slot_eliminate_dust_timeout(void);
     void slot_upate_bt(void);
     void slot_reconnect_bt(void);
+    void slot_request_finished(bool trueOrFalse, QString ret_text);
 private slots:
 
     void on_pushButton_lights_off_clicked();
@@ -143,6 +145,8 @@ private slots:
 
     void on_pushButton_indepandent_speed_clicked();
 
+    void on_pushButton_save_setting_clicked();
+
 private:
 
     Ui::Widget *ui;
@@ -150,6 +154,7 @@ private:
     QBluetoothLocalDevice *localDevice;
     QBluetoothSocket *socket;
     QList<QListWidgetItem *> mItems;
+    AdvGetWebInfo m_GetWebInfo;
     unsigned char comBuffer[15];
     unsigned int  comCount;
     QString comStr;
