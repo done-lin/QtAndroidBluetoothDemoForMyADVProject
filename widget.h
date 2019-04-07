@@ -93,6 +93,8 @@ public slots:
     void slot_upate_bt(void);
     void slot_reconnect_bt(void);
     void slot_request_finished(bool trueOrFalse, QString ret_text);
+    void slot_request_finished_2(bool trueOrFalse, QString ret_text);
+
 private slots:
 
     void on_pushButton_lights_off_clicked();

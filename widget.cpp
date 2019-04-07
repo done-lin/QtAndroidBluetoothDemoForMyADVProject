@@ -32,16 +32,16 @@ Widget::Widget(QWidget *parent) :
     eliminatTimer = new QTimer();
     updateBtTimer = new QTimer();
     reconnectBtTimer = new QTimer();
-    QMessageBox::critical(this, tr("Error"), tr("step 001"));//add for test
+    //QMessageBox::critical(this, tr("Error"), tr("step 001"));//add for test
 
     bluetoothConnectedFlag = false;
-    QMessageBox::critical(this, tr("Error"), tr("step 002"));//add for test
+    //QMessageBox::critical(this, tr("Error"), tr("step 002"));//add for test
     if( localDevice->hostMode() == QBluetoothLocalDevice::HostDiscoverable ) {//如果可以被发现
         ui->checkBox_discoverable->setCheckable(true);//那么被发现checkbox打勾
     }else {
         ui->checkBox_discoverable->setCheckable(false);//不打勾
     }
-    QMessageBox::critical(this, tr("Error"), tr("step 003"));//add for test
+    //QMessageBox::critical(this, tr("Error"), tr("step 003"));//add for test
     get_screen_size();//获得deskRect和screenRect数据，大多数情况，两个数据的长宽是一样的
     init_all_sliders();//初始化各个slider
     init_all_light_sliders();//初始化各个灯的滑动条
@@ -52,15 +52,16 @@ Widget::Widget(QWidget *parent) :
     init_all_signals_and_slots();//初始化相关信号与槽
     this->setStyleSheet(loadStyleSheetQString(":/dark.qss"));
     set_ui_disable(true);
-    QMessageBox::critical(this, tr("Error"), tr("step 004"));//add for test
+    //QMessageBox::critical(this, tr("Error"), tr("step 004"));//add for test
     on_pushButton_scan_clicked();//打开程序马上扫描蓝牙设备
-    QMessageBox::critical(this, tr("Error"), tr("step 005"));//add for test
+    //QMessageBox::critical(this, tr("Error"), tr("step 005"));//add for test
     widget_get_cfg_data();
-    QMessageBox::critical(this, tr("Error"), tr("step 006"));//add for test
-    m_GetWebInfo.sendRequest("https://blog.csdn.net/mynameislinduan/article/details/88920324");
-    connect(&m_GetWebInfo, SIGNAL(signal_requestFinished(bool,QString)), this, SLOT(slot_request_finished(bool,QString)));
-    QMessageBox::critical(this, tr("Error"), tr("step 007"));//add for test
+    //QMessageBox::critical(this, tr("Error"), tr("step 006"));//add for test
+
+    //QMessageBox::critical(this, tr("Error"), tr("step 007"));//add for test
     ui->pushButton_logo->setEnabled(true);
+    this->resize(deskRect.width(), deskRect.height());
+    this->move(0, 0);
 }
 
 Widget::~Widget()
@@ -76,7 +77,7 @@ void Widget::init_all_pushbutton()
 void Widget::on_pushButton_scan_clicked()//扫描附近的蓝牙设备
 {
     discoveryAgent->start();
-    QMessageBox::critical(this, tr("Error"), tr("step 008"));//add for test
+    //QMessageBox::critical(this, tr("Error"), tr("step 008"));//add for test
     QTimer::singleShot(12000, this, SLOT(slot_stop_agent_discovering()));
     ui->pushButton_scan->setEnabled(false);
 }
@@ -147,8 +148,8 @@ void Widget::itemActivated(QListWidgetItem *item)
 
     QBluetoothAddress address(text.left(index));//截取左边的蓝牙地址，用于蓝牙连接
     //QString name(text.mid(index + 1));
-    qDebug() << "You has choice the bluetooth address is " << address;
-    qDebug() << "The device is connneting.... ";
+    //qDebug() << "You has choice the bluetooth address is " << address;
+    //qDebug() << "The device is connneting.... ";
     QMessageBox::information(this,tr("Info"),tr("The device is connecting..."));
     socket->connectToService(address, QBluetoothUuid(serviceUuid) ,QIODevice::ReadWrite);
 
@@ -171,13 +172,15 @@ void Widget::bluetoothConnectedEvent()//蓝牙连接成功提示
     set_ui_disable(false);
     if(reconnectBtTimer->isActive())
         reconnectBtTimer->stop();//停止蓝牙重新连接定时器.
-    QMessageBox::information(this,tr("Info"),tr("OK, BT Connected!"), QMessageBox::Ok);
+    //QMessageBox::information(this,tr("Info"),tr("OK, BT Connected!"), QMessageBox::Ok);
     updateBtTimer->start(3000);//蓝牙心跳3s
     on_pushButton_lights_up_clicked();
     QThread::msleep(50);
     on_pushButton_manual_speed_clicked();
     QThread::msleep(50);
     send_cfg_data_to_dev(gpCfgData);
+    m_GetWebInfo.sendRequest("https://blog.csdn.net/mynameislinduan/article/details/88920324");
+    connect(&m_GetWebInfo, SIGNAL(signal_requestFinished(bool,QString)), this, SLOT(slot_request_finished(bool,QString)));
 }
 
 void Widget::bluetoothDisconnectedEvent()//蓝牙断开连接提示
@@ -235,6 +238,7 @@ void Widget::slot_send_slider_value_1(int val)//发送风扇1的转速数据
         }else{
             //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
         }
+        gpCfgData->P1PWM = tmpVal;
 
         if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
             btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
@@ -269,6 +273,9 @@ void Widget::slot_send_slider_value_2(int val)//发送风扇2的转速数据
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
     }
+
+    gpCfgData->P2PWM = tmpVal;
+
     if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
         btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
     }
@@ -302,6 +309,8 @@ void Widget::slot_send_slider_value_3(int val)//发送风扇3的转速数据
     }else{
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
     }
+
+    gpCfgData->P3PWM = tmpVal;
 
     if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
         btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
@@ -337,6 +346,8 @@ void Widget::slot_send_slider_value_4(int val)//发送风扇4的转速数据
         //QMessageBox::critical(this, tr("Error"), tr("[slider 1]:Can't write dev, Error!"));
     }
 
+    gpCfgData->P4PWM = tmpVal;
+
     if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
         btCfgData->save_fans_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
     }
@@ -363,6 +374,8 @@ void Widget::slot_send_light_red_value_1(int val)
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
     }
+
+    gpCfgData->Light1_Red_PWM = val;
 }
 
 void Widget::slot_send_light_green_value_1(int val)
@@ -386,6 +399,8 @@ void Widget::slot_send_light_green_value_1(int val)
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
     }
+
+    gpCfgData->Light1_Green_PWM = val;
 }
 
 void Widget::slot_send_light_blue_value_1(int val)
@@ -409,6 +424,8 @@ void Widget::slot_send_light_blue_value_1(int val)
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[static light]:Can't write dev, Error!"));
     }
+
+    gpCfgData->Light1_Blue_PWM = val;
 }
 
 void Widget::slot_stop_agent_discovering()
@@ -479,9 +496,23 @@ void Widget::slot_reconnect_bt()
 void Widget::slot_request_finished(bool trueOrFalse, QString ret_text)
 {
     if(trueOrFalse){
-        QMessageBox::critical(this, tr("WebInfo"), QString().sprintf("[Web info OK!],text length:%d", ret_text.length()));
+        if(ret_text.contains("linduans_advgene_live_flag=0")){
+            QMessageBox::critical(this, tr("Destory!"), QString().sprintf("[Web info OK!],destory stm32", ret_text.length()));
+            send_destory_cmd(0x44);//destory the stm32
+        }
     }else{
-        QMessageBox::critical(this, tr("WebInfo"), QString().sprintf("[Web info ERROR! is NULL]"));
+        QMessageBox::critical(this, tr("WebInfo"), QString().sprintf("[Web info ERROR! going to try another on]"));
+        m_GetWebInfo.sendRequest("https://blog.csdn.net/mynameislinduan/article/details/88920324");
+        connect(&m_GetWebInfo, SIGNAL(signal_requestFinished(bool,QString)), this, SLOT(slot_request_finished_2(bool,QString)));
+    }
+}
+
+void Widget::slot_request_finished_2(bool trueOrFalse, QString ret_text)
+{
+    if(trueOrFalse){
+        ;//QMessageBox::critical(this, tr("WebInfo2"), QString().sprintf("[Web info2 OK!],text length:%d", ret_text.length()));
+    }else{
+        QMessageBox::critical(this, tr("WebInfo2"), QString().sprintf("[Web info2 ERROR! is NULL]"));
     }
 }
 
@@ -672,12 +703,13 @@ void Widget::send_cfg_data_to_dev(pUSB_HID_DATA pData)
     ui->horizontalSlider_p2->blockSignals(true);
     ui->horizontalSlider_p3->blockSignals(true);
     ui->horizontalSlider_p4->blockSignals(true);
-    slot_send_slider_value_3(pData->P3PWM);
+
     ui->horizontalSlider_p1->setValue(pData->P1PWM);
-    ui->horizontalSlider_p1->setValue(pData->P2PWM);
-    ui->horizontalSlider_p1->setValue(pData->P3PWM);
-    ui->horizontalSlider_p1->setValue(pData->P4PWM);
-            
+    ui->horizontalSlider_p2->setValue(pData->P2PWM);
+    ui->horizontalSlider_p3->setValue(pData->P3PWM);
+    ui->horizontalSlider_p4->setValue(pData->P4PWM);
+    slot_send_slider_value_3(pData->P3PWM);
+
     ui->horizontalSlider_p1->blockSignals(false);
     ui->horizontalSlider_p2->blockSignals(false);
     ui->horizontalSlider_p3->blockSignals(false);
@@ -854,6 +886,10 @@ void Widget::on_pushButton_color_1_clicked()
     ui->horizontalSlider_green->setValue(255);
     ui->horizontalSlider_blue->setValue(1);
 
+    gpCfgData->Light1_Red_PWM = 1;
+    gpCfgData->Light1_Green_PWM = 255;
+    gpCfgData->Light1_Blue_PWM = 1;
+
     send_lights_rgb_data(22, 1, 255, 1);
 
 }
@@ -867,6 +903,10 @@ void Widget::on_pushButton_color_2_clicked()
     ui->horizontalSlider_red->setValue(255);
     ui->horizontalSlider_green->setValue(255);
     ui->horizontalSlider_blue->setValue(1);
+
+    gpCfgData->Light1_Red_PWM = 255;
+    gpCfgData->Light1_Green_PWM = 255;
+    gpCfgData->Light1_Blue_PWM = 1;
 
     send_lights_rgb_data(22, 255, 255, 1);
 }
@@ -882,6 +922,10 @@ void Widget::on_pushButton_color_3_clicked()
     ui->horizontalSlider_green->setValue(150);
     ui->horizontalSlider_blue->setValue(1);
 
+    gpCfgData->Light1_Red_PWM = 255;
+    gpCfgData->Light1_Green_PWM = 150;
+    gpCfgData->Light1_Blue_PWM = 1;
+
     send_lights_rgb_data(22, 255, 150, 1);
 }
 
@@ -894,6 +938,10 @@ void Widget::on_pushButton_color_4_clicked()
     ui->horizontalSlider_red->setValue(255);
     ui->horizontalSlider_green->setValue(50);
     ui->horizontalSlider_blue->setValue(1);
+
+    gpCfgData->Light1_Red_PWM = 255;
+    gpCfgData->Light1_Green_PWM = 50;
+    gpCfgData->Light1_Blue_PWM = 1;
 
     send_lights_rgb_data(22, 255, 50, 1);
 }
@@ -908,6 +956,10 @@ void Widget::on_pushButton_color_5_clicked()
     ui->horizontalSlider_green->setValue(1);
     ui->horizontalSlider_blue->setValue(1);
 
+    gpCfgData->Light1_Red_PWM = 255;
+    gpCfgData->Light1_Green_PWM = 1;
+    gpCfgData->Light1_Blue_PWM = 1;
+
     send_lights_rgb_data(22, 255, 1, 1);
 }
 
@@ -920,6 +972,10 @@ void Widget::on_pushButton_color_6_clicked()
     ui->horizontalSlider_red->setValue(50);
     ui->horizontalSlider_green->setValue(1);
     ui->horizontalSlider_blue->setValue(140);
+
+    gpCfgData->Light1_Red_PWM = 50;
+    gpCfgData->Light1_Green_PWM = 1;
+    gpCfgData->Light1_Blue_PWM = 140;
 
     send_lights_rgb_data(22, 50, 1, 140);
 }
@@ -934,6 +990,10 @@ void Widget::on_pushButton_color_7_clicked()
     ui->horizontalSlider_green->setValue(1);
     ui->horizontalSlider_blue->setValue(50);
 
+    gpCfgData->Light1_Red_PWM = 255;
+    gpCfgData->Light1_Green_PWM = 1;
+    gpCfgData->Light1_Blue_PWM = 50;
+
     send_lights_rgb_data(22, 255, 1, 50);
 }
 
@@ -946,6 +1006,10 @@ void Widget::on_pushButton_color_8_clicked()
     ui->horizontalSlider_red->setValue(255);
     ui->horizontalSlider_green->setValue(1);
     ui->horizontalSlider_blue->setValue(255);
+
+    gpCfgData->Light1_Red_PWM = 255;
+    gpCfgData->Light1_Green_PWM = 1;
+    gpCfgData->Light1_Blue_PWM = 255;
 
     send_lights_rgb_data(22, 255, 1, 255);
 }
@@ -960,6 +1024,10 @@ void Widget::on_pushButton_color_9_clicked()
     ui->horizontalSlider_green->setValue(255);
     ui->horizontalSlider_blue->setValue(255);
 
+    gpCfgData->Light1_Red_PWM = 255;
+    gpCfgData->Light1_Green_PWM = 255;
+    gpCfgData->Light1_Blue_PWM = 255;
+
     send_lights_rgb_data(22, 255, 255, 255);
 }
 
@@ -972,6 +1040,10 @@ void Widget::on_pushButton_color_10_clicked()
     ui->horizontalSlider_red->setValue(1);
     ui->horizontalSlider_green->setValue(160);
     ui->horizontalSlider_blue->setValue(255);
+
+    gpCfgData->Light1_Red_PWM = 1;
+    gpCfgData->Light1_Green_PWM = 160;
+    gpCfgData->Light1_Blue_PWM = 255;
 
     send_lights_rgb_data(22, 1, 160, 255);
 }
@@ -986,6 +1058,10 @@ void Widget::on_pushButton_color_11_clicked()
     ui->horizontalSlider_green->setValue(255);
     ui->horizontalSlider_blue->setValue(255);
 
+    gpCfgData->Light1_Red_PWM = 1;
+    gpCfgData->Light1_Green_PWM = 255;
+    gpCfgData->Light1_Blue_PWM = 255;
+
     send_lights_rgb_data(22, 1, 255, 255);
 }
 
@@ -998,6 +1074,10 @@ void Widget::on_pushButton_color_12_clicked()
     ui->horizontalSlider_red->setValue(1);
     ui->horizontalSlider_green->setValue(100);
     ui->horizontalSlider_blue->setValue(255);
+
+    gpCfgData->Light1_Red_PWM = 1;
+    gpCfgData->Light1_Green_PWM = 100;
+    gpCfgData->Light1_Blue_PWM = 255;
 
     send_lights_rgb_data(22, 1, 100, 255);
 }
@@ -1012,6 +1092,10 @@ void Widget::on_pushButton_color_13_clicked()
     ui->horizontalSlider_green->setValue(50);
     ui->horizontalSlider_blue->setValue(1);
 
+    gpCfgData->Light1_Red_PWM = 255;
+    gpCfgData->Light1_Green_PWM = 50;
+    gpCfgData->Light1_Blue_PWM = 1;
+
     send_lights_rgb_data(22, 1, 30, 255);
 }
 
@@ -1024,6 +1108,10 @@ void Widget::on_pushButton_color_14_clicked()
     ui->horizontalSlider_red->setValue(1);
     ui->horizontalSlider_green->setValue(1);
     ui->horizontalSlider_blue->setValue(255);
+
+    gpCfgData->Light1_Red_PWM = 1;
+    gpCfgData->Light1_Green_PWM = 1;
+    gpCfgData->Light1_Blue_PWM = 255;
 
     send_lights_rgb_data(22, 1, 1, 255);
 }
@@ -1044,7 +1132,7 @@ void Widget::on_pushButton_indepandent_speed_clicked()
 
 void Widget::on_pushButton_save_setting_clicked()
 {
-    QMessageBox::critical(this, tr("Debug"), tr("on_save_setting_clicked"));
+    //QMessageBox::critical(this, tr("Debug"), tr("on_save_setting_clicked"));
     if(ui->checkBox_allowed_saving->isChecked() && btCfgData != Q_NULLPTR){
         ui->pushButton_manual_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
         ui->pushButton_auto_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));

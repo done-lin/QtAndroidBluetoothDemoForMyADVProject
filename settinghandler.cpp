@@ -111,15 +111,15 @@ void SettingHandler::save_config_data_to_setting_file(QString fileName, pUSB_HID
     settings.setValue("Light3_Red_Breath_Interval", pData->Light3_Red_Breath_Interval);
     settings.setValue("Light4_Red_Breath_Interval", pData->Light4_Red_Breath_Interval);
 
-    settings.setValue("Light1_Green_Breath_Interval", pData->Light4_Green_Breath_Interval);
-    settings.setValue("Light2_Green_Breath_Interval", pData->Light4_Green_Breath_Interval);
-    settings.setValue("Light3_Green_Breath_Interval", pData->Light4_Green_Breath_Interval);
+    settings.setValue("Light1_Green_Breath_Interval", pData->Light1_Green_Breath_Interval);
+    settings.setValue("Light2_Green_Breath_Interval", pData->Light2_Green_Breath_Interval);
+    settings.setValue("Light3_Green_Breath_Interval", pData->Light3_Green_Breath_Interval);
     settings.setValue("Light4_Green_Breath_Interval", pData->Light4_Green_Breath_Interval);
 
     settings.setValue("Light1_Blue_Breath_Interval", pData->Light1_Blue_Breath_Interval);
-    settings.setValue("Light2_Blue_Breath_Interval", pData->Light1_Blue_Breath_Interval);
-    settings.setValue("Light3_Blue_Breath_Interval", pData->Light1_Blue_Breath_Interval);
-    settings.setValue("Light4_Blue_Breath_Interval", pData->Light1_Blue_Breath_Interval);
+    settings.setValue("Light2_Blue_Breath_Interval", pData->Light2_Blue_Breath_Interval);
+    settings.setValue("Light3_Blue_Breath_Interval", pData->Light3_Blue_Breath_Interval);
+    settings.setValue("Light4_Blue_Breath_Interval", pData->Light4_Blue_Breath_Interval);
     settings.setValue("reserved", pData->reserved[27]);
     settings.endGroup();
     settings.sync();
@@ -138,7 +138,7 @@ void SettingHandler::init_config_data_settings_file(QString fileName)
         settings.setValue("encryption", 0);
         settings.setValue("DirtyFlag", 0);
         settings.setValue("fansMode", 1);
-        settings.setValue("lightsMode", 1);
+        settings.setValue("lightsMode", 3);
         settings.setValue("memMode", 1);
         settings.setValue("ctrlFansMode", 1);
         settings.setValue("CtrlAllAutoSpeedUpMode", 1);

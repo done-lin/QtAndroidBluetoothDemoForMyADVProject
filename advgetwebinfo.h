@@ -19,6 +19,7 @@ signals:
 public slots:
     void slot_requestFinished(); //http请求结束
     void slot_requestTimeout();  //请求超时
+    //void slot_http_read_ready();
 private:
     QNetworkAccessManager m_NetworkManager;//网络管理类
     QNetworkReply* m_pNetworkReply; //封装请求返回信息
