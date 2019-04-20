@@ -56,7 +56,7 @@ void AdvGetWebInfo::slot_requestFinished()
 
 
         qDebug("LinDbg, get web success!");
-        QMessageBox::warning(0, tr("Network permission"), "webinfo read OK, web Code 200", QMessageBox::Ok);
+        //QMessageBox::warning(0, tr("Network permission"), "webinfo read OK, web Code 200", QMessageBox::Ok);
         qDebug()<<"LinDbg, data length:"<<resultContent.length();
         emit signal_requestFinished(true,strResult);//请求成功
     }else{

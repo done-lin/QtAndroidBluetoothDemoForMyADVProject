@@ -243,13 +243,13 @@ QString SettingHandler::check_android_writable_location()
         return writableLocationString;
     }
     if(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).isEmpty()){
-        QMessageBox::critical(0, tr("Error"), "No Android writable locations is empty", QMessageBox::Ok);
+        //QMessageBox::critical(0, tr("Error"), "No Android writable locations is empty", QMessageBox::Ok);
         writableLocationString.clear();
     }else{
         writableLocationString.clear();
         writableLocationString.append(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
         writableLocationString.append('/');
-        QMessageBox::warning(0, tr("Get Localtion OK"), writableLocationString, QMessageBox::Ok);
+        //QMessageBox::warning(0, tr("Get Localtion OK"), writableLocationString, QMessageBox::Ok);
     }
     return writableLocationString;
 }

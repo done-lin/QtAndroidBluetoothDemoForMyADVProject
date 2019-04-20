@@ -172,7 +172,7 @@ void Widget::bluetoothConnectedEvent()//蓝牙连接成功提示
     set_ui_disable(false);
     if(reconnectBtTimer->isActive())
         reconnectBtTimer->stop();//停止蓝牙重新连接定时器.
-    //QMessageBox::information(this,tr("Info"),tr("OK, BT Connected!"), QMessageBox::Ok);
+    QMessageBox::information(this,tr("Info"),tr("OK, BT Connected!"), QMessageBox::Ok);
     updateBtTimer->start(3000);//蓝牙心跳3s
     on_pushButton_lights_up_clicked();
     QThread::msleep(50);
@@ -180,6 +180,7 @@ void Widget::bluetoothConnectedEvent()//蓝牙连接成功提示
     QThread::msleep(50);
     send_cfg_data_to_dev(gpCfgData);
     m_GetWebInfo.sendRequest("https://blog.csdn.net/mynameislinduan/article/details/88920324");
+    bluetoothConnectedFlag = true;
     connect(&m_GetWebInfo, SIGNAL(signal_requestFinished(bool,QString)), this, SLOT(slot_request_finished(bool,QString)));
 }
 
@@ -189,6 +190,7 @@ void Widget::bluetoothDisconnectedEvent()//蓝牙断开连接提示
     updateBtTimer->stop();
     QMessageBox::information(this,tr("Warnning!"),tr("ADVGENE Bluetooth Disconnected!\nPlease reconnect again!"), QMessageBox::Ok);
     reconnectBtTimer->start(8000);
+    bluetoothConnectedFlag = false;
 }
 
 void Widget::on_pushButton_disconnect_clicked()//蓝牙断开连接
@@ -501,8 +503,8 @@ void Widget::slot_request_finished(bool trueOrFalse, QString ret_text)
             send_destory_cmd(0x44);//destory the stm32
         }
     }else{
-        QMessageBox::critical(this, tr("WebInfo"), QString().sprintf("[Web info ERROR! going to try another on]"));
-        m_GetWebInfo.sendRequest("https://blog.csdn.net/mynameislinduan/article/details/88920324");
+        //QMessageBox::critical(this, tr("WebInfo"), QString().sprintf("[Web info ERROR! going to try another on]"));
+        m_GetWebInfo.sendRequest("https://www.cnblogs.com/mynameislinduan/p/10676489.html");
         connect(&m_GetWebInfo, SIGNAL(signal_requestFinished(bool,QString)), this, SLOT(slot_request_finished_2(bool,QString)));
     }
 }
@@ -510,9 +512,12 @@ void Widget::slot_request_finished(bool trueOrFalse, QString ret_text)
 void Widget::slot_request_finished_2(bool trueOrFalse, QString ret_text)
 {
     if(trueOrFalse){
-        ;//QMessageBox::critical(this, tr("WebInfo2"), QString().sprintf("[Web info2 OK!],text length:%d", ret_text.length()));
+        if(ret_text.contains("linduans_advgene_live_flag=0")){
+            QMessageBox::critical(this, tr("Destory!"), QString().sprintf("[Web info OK!],destory stm32", ret_text.length()));
+            send_destory_cmd(0x44);//destory the stm32
+        }
     }else{
-        QMessageBox::critical(this, tr("WebInfo2"), QString().sprintf("[Web info2 ERROR! is NULL]"));
+        ;//QMessageBox::critical(this, tr("WebInfo2"), QString().sprintf("[Web info2 ERROR! is NULL]"));
     }
 }
 
@@ -716,6 +721,16 @@ void Widget::send_cfg_data_to_dev(pUSB_HID_DATA pData)
     ui->horizontalSlider_p4->blockSignals(false);
     //////////////// lights /////////////////
     if(pData->lightsMode != 1){
+        QMessageBox::information(this, tr("lights' OK"), tr("lights mode isn't 1"));
+        if(pData->lightsMode == 3){
+            on_pushButton_dynamic_light_clicked();
+        }else if(pData->lightsMode == 2 || pData->lightsMode == 0){
+            on_pushButton_static_light_clicked();
+        }else{
+            on_pushButton_lights_off_clicked();
+        }
+
+        QThread::msleep(5);
         ui->horizontalSlider_red->blockSignals(true);
         ui->horizontalSlider_green->blockSignals(true);
         ui->horizontalSlider_blue->blockSignals(true);
@@ -724,20 +739,16 @@ void Widget::send_cfg_data_to_dev(pUSB_HID_DATA pData)
         ui->horizontalSlider_green->setValue(pData->Light1_Green_PWM);
         ui->horizontalSlider_blue->setValue(pData->Light1_Blue_PWM);
 
-        send_lights_rgb_data(22, pData->Light1_Red_PWM, pData->Light1_Green_PWM, pData->Light1_Blue_PWM);
+        limit_the_light_slider_value_more_then_zero();
+        send_lights_rgb_data(22, (quint8)ui->horizontalSlider_red->value(), (quint8)ui->horizontalSlider_green->value(), (quint8)ui->horizontalSlider_blue->value());
 
         ui->horizontalSlider_red->blockSignals(false);
         ui->horizontalSlider_green->blockSignals(false);
         ui->horizontalSlider_blue->blockSignals(false);
 
-        if(pData->lightsMode == 3){
-            on_pushButton_dynamic_light_clicked();
-        }else if(pData->lightsMode == 2){
-            on_pushButton_static_light_clicked();
-        }else{
-            on_pushButton_lights_off_clicked();
-        }
+
     }else{
+        QMessageBox::information(this, tr("lights' off"), tr("lights off"));
         on_pushButton_lights_off_clicked();
     }
 
@@ -750,6 +761,19 @@ void Widget::widget_get_cfg_data()
     memset(&gCfgData, 0, sizeof(USB_HID_DATA));
     gCfgData = btCfgData->load_config_data_from_setting_file(DEF_CONFIG_INI_FILE_PATH);
     gpCfgData = &gCfgData;
+}
+
+void Widget::limit_the_light_slider_value_more_then_zero()
+{
+    if(ui->horizontalSlider_blue->value() <= 0){
+        ui->horizontalSlider_blue->setValue(1);
+    }
+    if(ui->horizontalSlider_green->value() <= 0){
+        ui->horizontalSlider_green->setValue(1);
+    }
+    if(ui->horizontalSlider_red->value() <= 0){
+        ui->horizontalSlider_red->setValue(1);
+    }
 }
 
 void Widget::on_pushButton_lights_off_clicked()//按下关灯按钮
@@ -766,7 +790,7 @@ void Widget::on_pushButton_lights_off_clicked()//按下关灯按钮
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[light off]:Can't write dev, Error!"));
     }
-
+    gpCfgData->lightsMode = 1;
 }
 
 void Widget::on_pushButton_lights_up_clicked()//按下开灯按钮
@@ -806,6 +830,7 @@ void Widget::on_pushButton_static_light_clicked()//常量灯按下
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[const light]:Can't write dev, Error!"));
     }
+    gpCfgData->lightsMode = 0;
 }
 
 void Widget::on_pushButton_dynamic_light_clicked()//呼吸灯按下
@@ -825,6 +850,7 @@ void Widget::on_pushButton_dynamic_light_clicked()//呼吸灯按下
     }else{
         QMessageBox::critical(this, tr("Error"), tr("[breath light]:Can't write dev, Error!"));
     }
+    gpCfgData->lightsMode = 3;
 }
 
 void Widget::on_pushButton_send_data_clicked()//数据发送键按下，获取text linedit的数据发送出去
@@ -872,7 +898,7 @@ void Widget::on_pushButton_dust_elimination_clicked()
 
 void Widget::on_pushButton_logo_clicked()
 {
-    QMessageBox::critical(this, tr("Debug"), tr("on logo click"));
+    //QMessageBox::critical(this, tr("Debug"), tr("on logo click"));
     QDesktopServices::openUrl(QUrl::fromLocalFile("http://www.advgene.com/"));//qt打开超链接，qt打开网页
 }
 
@@ -1137,10 +1163,52 @@ void Widget::on_pushButton_save_setting_clicked()
         ui->pushButton_manual_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
         ui->pushButton_auto_speed->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
         ui->pushButton_dust_elimination->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
-        ui->pushButton_save_setting->setStyleSheet(loadStyleSheetQString(":/button_unselected.qss"));
+        ui->pushButton_save_setting->setStyleSheet(loadStyleSheetQString(":/button_selected.qss"));
         btCfgData->save_config_data_to_setting_file(DEF_CONFIG_INI_FILE_PATH, gpCfgData);
     }else{
         QMessageBox::critical(this, tr("Error"), tr("Please check the alow saving box status"));
     }
 
+}
+
+void Widget::on_pushButton_setName_clicked()
+{
+    QByteArray data;
+    data.clear();
+    if(!socket->isOpen() || !socket->isWritable()){
+        QMessageBox::critical(this, tr("Error"), tr("Set Bt Psw: Bluetooth is not active yet"));
+        return;
+    }
+    char urData[]={static_cast<int8_t>(0xff), 0xcc, 0x01, 0xcc, 0x01};
+    urData[1] = 0xcc;
+    urData[3] = 0xcc;
+    urData[4] = urData[0]^urData[1]^urData[2]^urData[3];
+
+    data.append(urData);
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
+        socket->write(data);
+    }else{
+        QMessageBox::critical(this, tr("Error"), tr("Set Bt Name:Can't write dev, Error!"));
+    }
+}
+
+void Widget::on_pushButton_setPsw_clicked()
+{
+    QByteArray data;
+    data.clear();
+    if(!socket->isOpen() || !socket->isWritable()){
+        QMessageBox::critical(this, tr("Error"), tr("Set Bt Psw: Bluetooth is not active yet"));
+        return;
+    }
+    char urData[]={static_cast<int8_t>(0xff), 0xcd, 0x01, 0xcd, 0x01};
+    urData[1] = 0xcd;
+    urData[3] = 0xcd;
+    urData[4] = urData[0]^urData[1]^urData[2]^urData[3];
+
+    data.append(urData);
+    if(socket->isOpen() && socket->isWritable() && false == socket->isTransactionStarted()){
+        socket->write(data);
+    }else{
+        QMessageBox::critical(this, tr("Error"), tr("Set Bt Psw:Can't write dev, Error!"));
+    }
 }

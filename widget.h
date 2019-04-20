@@ -60,6 +60,7 @@ public:
     void disconnect_all_fans_slider_signals(void);
     void send_cfg_data_to_dev(pUSB_HID_DATA pData);
     void widget_get_cfg_data(void);
+    void limit_the_light_slider_value_more_then_zero(void);
     SettingHandler *btCfgData;
     QBluetoothAddress g_BtAddress;
 signals:
@@ -148,6 +149,10 @@ private slots:
     void on_pushButton_indepandent_speed_clicked();
 
     void on_pushButton_save_setting_clicked();
+
+    void on_pushButton_setName_clicked();
+
+    void on_pushButton_setPsw_clicked();
 
 private:
 

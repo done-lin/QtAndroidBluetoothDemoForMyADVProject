@@ -111,11 +111,13 @@ public:
     QLabel *label_data;
     QLineEdit *lineEdit_data_to_be_sent;
     QGridLayout *gridLayout_7;
-    QPushButton *pushButton_disconnect;
-    QPushButton *pushButton_send_data;
-    QPushButton *pushButton_clear;
-    QPushButton *pushButton_scan;
     QCheckBox *checkBox_discoverable;
+    QPushButton *pushButton_scan;
+    QPushButton *pushButton_clear;
+    QPushButton *pushButton_send_data;
+    QPushButton *pushButton_disconnect;
+    QPushButton *pushButton_setName;
+    QPushButton *pushButton_setPsw;
 
     void setupUi(QWidget *Widget)
     {
@@ -668,27 +670,24 @@ public:
         gridLayout_7 = new QGridLayout();
         gridLayout_7->setSpacing(6);
         gridLayout_7->setObjectName(QStringLiteral("gridLayout_7"));
-        pushButton_disconnect = new QPushButton(tab_3);
-        pushButton_disconnect->setObjectName(QStringLiteral("pushButton_disconnect"));
-        sizePolicy.setHeightForWidth(pushButton_disconnect->sizePolicy().hasHeightForWidth());
-        pushButton_disconnect->setSizePolicy(sizePolicy);
-        pushButton_disconnect->setMinimumSize(QSize(0, 0));
+        checkBox_discoverable = new QCheckBox(tab_3);
+        checkBox_discoverable->setObjectName(QStringLiteral("checkBox_discoverable"));
+        sizePolicy.setHeightForWidth(checkBox_discoverable->sizePolicy().hasHeightForWidth());
+        checkBox_discoverable->setSizePolicy(sizePolicy);
+
+        gridLayout_7->addWidget(checkBox_discoverable, 3, 0, 1, 1);
+
+        pushButton_scan = new QPushButton(tab_3);
+        pushButton_scan->setObjectName(QStringLiteral("pushButton_scan"));
+        sizePolicy.setHeightForWidth(pushButton_scan->sizePolicy().hasHeightForWidth());
+        pushButton_scan->setSizePolicy(sizePolicy);
         QFont font3;
         font3.setFamily(QStringLiteral("Arial"));
         font3.setBold(false);
         font3.setWeight(50);
-        pushButton_disconnect->setFont(font3);
+        pushButton_scan->setFont(font3);
 
-        gridLayout_7->addWidget(pushButton_disconnect, 0, 1, 1, 1);
-
-        pushButton_send_data = new QPushButton(tab_3);
-        pushButton_send_data->setObjectName(QStringLiteral("pushButton_send_data"));
-        sizePolicy.setHeightForWidth(pushButton_send_data->sizePolicy().hasHeightForWidth());
-        pushButton_send_data->setSizePolicy(sizePolicy);
-        pushButton_send_data->setMinimumSize(QSize(0, 0));
-        pushButton_send_data->setFont(font1);
-
-        gridLayout_7->addWidget(pushButton_send_data, 0, 0, 1, 1);
+        gridLayout_7->addWidget(pushButton_scan, 2, 1, 1, 1);
 
         pushButton_clear = new QPushButton(tab_3);
         pushButton_clear->setObjectName(QStringLiteral("pushButton_clear"));
@@ -697,22 +696,35 @@ public:
         pushButton_clear->setMinimumSize(QSize(0, 0));
         pushButton_clear->setFont(font1);
 
-        gridLayout_7->addWidget(pushButton_clear, 1, 0, 1, 1);
+        gridLayout_7->addWidget(pushButton_clear, 2, 0, 1, 1);
 
-        pushButton_scan = new QPushButton(tab_3);
-        pushButton_scan->setObjectName(QStringLiteral("pushButton_scan"));
-        sizePolicy.setHeightForWidth(pushButton_scan->sizePolicy().hasHeightForWidth());
-        pushButton_scan->setSizePolicy(sizePolicy);
-        pushButton_scan->setFont(font3);
+        pushButton_send_data = new QPushButton(tab_3);
+        pushButton_send_data->setObjectName(QStringLiteral("pushButton_send_data"));
+        sizePolicy.setHeightForWidth(pushButton_send_data->sizePolicy().hasHeightForWidth());
+        pushButton_send_data->setSizePolicy(sizePolicy);
+        pushButton_send_data->setMinimumSize(QSize(0, 0));
+        pushButton_send_data->setFont(font1);
 
-        gridLayout_7->addWidget(pushButton_scan, 1, 1, 1, 1);
+        gridLayout_7->addWidget(pushButton_send_data, 1, 0, 1, 1);
 
-        checkBox_discoverable = new QCheckBox(tab_3);
-        checkBox_discoverable->setObjectName(QStringLiteral("checkBox_discoverable"));
-        sizePolicy.setHeightForWidth(checkBox_discoverable->sizePolicy().hasHeightForWidth());
-        checkBox_discoverable->setSizePolicy(sizePolicy);
+        pushButton_disconnect = new QPushButton(tab_3);
+        pushButton_disconnect->setObjectName(QStringLiteral("pushButton_disconnect"));
+        sizePolicy.setHeightForWidth(pushButton_disconnect->sizePolicy().hasHeightForWidth());
+        pushButton_disconnect->setSizePolicy(sizePolicy);
+        pushButton_disconnect->setMinimumSize(QSize(0, 0));
+        pushButton_disconnect->setFont(font3);
 
-        gridLayout_7->addWidget(checkBox_discoverable, 2, 0, 1, 1);
+        gridLayout_7->addWidget(pushButton_disconnect, 1, 1, 1, 1);
+
+        pushButton_setName = new QPushButton(tab_3);
+        pushButton_setName->setObjectName(QStringLiteral("pushButton_setName"));
+
+        gridLayout_7->addWidget(pushButton_setName, 0, 0, 1, 1);
+
+        pushButton_setPsw = new QPushButton(tab_3);
+        pushButton_setPsw->setObjectName(QStringLiteral("pushButton_setPsw"));
+
+        gridLayout_7->addWidget(pushButton_setPsw, 0, 1, 1, 1);
 
         gridLayout_7->setRowStretch(0, 1);
         gridLayout_7->setRowStretch(1, 1);
@@ -743,7 +755,7 @@ public:
 
         retranslateUi(Widget);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(Widget);
@@ -792,11 +804,13 @@ public:
         checkBox_2->setText(QApplication::translate("Widget", "Auto hibernate", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("Widget", "Lights", Q_NULLPTR));
         label_data->setText(QApplication::translate("Widget", "data", Q_NULLPTR));
-        pushButton_disconnect->setText(QApplication::translate("Widget", "Disconnect", Q_NULLPTR));
-        pushButton_send_data->setText(QApplication::translate("Widget", "Send Data", Q_NULLPTR));
-        pushButton_clear->setText(QApplication::translate("Widget", "Clear List", Q_NULLPTR));
-        pushButton_scan->setText(QApplication::translate("Widget", "Scan Device", Q_NULLPTR));
         checkBox_discoverable->setText(QApplication::translate("Widget", "Discoverable", Q_NULLPTR));
+        pushButton_scan->setText(QApplication::translate("Widget", "Scan Device", Q_NULLPTR));
+        pushButton_clear->setText(QApplication::translate("Widget", "Clear List", Q_NULLPTR));
+        pushButton_send_data->setText(QApplication::translate("Widget", "Send Data", Q_NULLPTR));
+        pushButton_disconnect->setText(QApplication::translate("Widget", "Disconnect", Q_NULLPTR));
+        pushButton_setName->setText(QApplication::translate("Widget", "Set Bluetooth Nname", Q_NULLPTR));
+        pushButton_setPsw->setText(QApplication::translate("Widget", "Set Bluetooth Password", Q_NULLPTR));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("Widget", "BlueTooth Info", Q_NULLPTR));
     } // retranslateUi
 
